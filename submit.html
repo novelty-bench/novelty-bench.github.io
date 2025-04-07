@@ -37,6 +37,14 @@
         li {
             margin-bottom: 0.5em;
         }
+
+        .black-box-link {
+            color: #4fc3f7 !important; /* A bright, visible blue */
+            text-decoration: underline;
+        }
+        .black-box-link:hover {
+            color: #81d4fa !important; /* A lighter blue on hover */
+        }
     </style>
     <!-- Google tag (gtag.js) -->
     <script
@@ -77,6 +85,11 @@
                         <i class="fab fa-github"></i> Code&nbsp;
                     </button>
                 </a>
+                <a href="submit.html">
+                    <button class="outline">
+                      <i class="fa fa-upload"></i> Submit&nbsp;
+                    </button>
+                </a>
                 <a href="viewer.html">
                     <button class="outline">
                         <i class="fa fa-chart-simple"></i> Analysis&nbsp;
@@ -89,8 +102,8 @@
         <div class="content-wrapper" style="display: flex; justify-content: center; align-items: center;">
             <div style="background-color: black; padding: 1.5em 1em; color: white; border-radius: 1em; text-align: center; width: 80%;">
                 All official submissions to the NoveltyBench leaderboard are maintained at
-                <a href="https://github.com/novelty-bench/experiments" class="light-blue-link" target="_blank" rel="noopener noreferrer">
-                    <i class="fab fa-github"></i> novelty-bench/experiments
+                <a href="https://github.com/novelty-bench/novelty-bench/tree/main/evaluation" class="black-box-link" target="_blank" rel="noopener noreferrer">
+                    <i class="fab fa-github"></i> novelty-bench/novelty-bench/evaluation
                 </a>
             </div>
         </div>
@@ -99,17 +112,17 @@
                 <h3>
                     Submit to NoveltyBench Leaderboard
                 </h3>
-                <div style="height: 20px;"></div>
+                <div style="height: 10px;"></div>
                 <p>
                     If you are interested in submitting your model to the NoveltyBench Leaderboard, please do the following:
                 </p>
                 <ol>
-                    <li>Fork this repository;</li>
+                    <li>Fork the official <a href="https://github.com/novelty-bench/novelty-bench">repository</a>;</li>
                     <li>Clone your fork;</li>
                     <li>Under <code>evaluation/</code>, create a new folder with the submission date and your model name (e.g., <code>2025-03-27_gemini-1.5-pro</code>);</li>
                     <li>Within the folder (<code>evaluation/&lt;date + name&gt;/</code>), please include the following <b>required</b> assets:</li>
                     <ul>
-                        <li> Follow the instruction in the README of the official <a href="https://github.com/novelty-bench/novelty-bench">repository</a> and get the following files for each subset <i>NB-Curated</i> and <i></i>NB-WildChat</i>:</li>
+                        <li> Follow the instruction in the README of the official repository to get the following files for each subset <i>NB-Curated</i> and <i></i>NB-WildChat</i>:</li>
                         <ul>
                             <li>generations.jsonl</li>
                             <li>partitions.jsonl</li>
@@ -131,7 +144,7 @@
                     </ul>
                     <li>Create a pull request to this repository with the new folder.</li>
                 </ol>  
-                <div style="height: 20px;"></div>
+                <div style="height: 10px;"></div>
                 <p>
                     The NoveltyBench team will:
                     <ul>

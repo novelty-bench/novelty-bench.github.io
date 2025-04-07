@@ -62,6 +62,11 @@
             Yiming Zhang*, Harshita Diddee, Susan Holm, Hanchen Liu, Xinyue Liu, Vinay Samuel, Barry Wang, Daphne Ippolito
           </p>
           <div class="content-wrapper" style="margin-top: 2em">
+            <a href="index.html">
+              <button class="outline">
+                  <i class="fa fa-home"></i> Home&nbsp;
+              </button>
+            </a>
             <a href="https://arxiv.org/abs/2310.06770" style="display: none;">
               <button class="outline">
                 <i class="fa fa-paperclip"></i> Paper&nbsp;
@@ -303,15 +308,31 @@
         <div class="content-wrapper">
           <div class="content-box">
             <h2 class="text-title">Resources</h2>
-            <p>You can download all the prompts in NoveltyBench from 🤗HuggingFace. [<a href="https://huggingface.co/datasets/yimingzhang/novelty-bench">Link</a>]</p>
+            <p>You can download all the prompts in NoveltyBench from 🤗HuggingFace. [<a href="https://huggingface.co/datasets/yimingzhang/novelty-bench" class="light-blue-link">Link</a>]</p>
           </div>
         </div>
         <div class="content-wrapper">
           <div class="content-box">
             <h2 class="text-title">About the NoveltyBench</h2>
-            <img src="img/overall.png" style="width:50%;margin:auto;display:block;"/>
-            <p></p>
-            <p>Language models have demonstrated remarkable capabilities on standard benchmarks, yet they struggle increasingly from <i>mode collapse</i>, the inability to generate diverse and novel outputs. Our work introduces NoveltyBench, a benchmark designed to specifically evaluate the capability of language models to produce multiple distinct and high-quality outputs, in contrast with the "mode-seeking" evaluation paradigm in standard language model benchmarking. Our evaluation data consists of carefully curated prompts, and as well as a filtered real-world user queries from WildChat. In an evaluation of 20 language models from frontier labs, we find that the current state-of-the-art model cannot provide adequate distributional diversity compared to, say, a room of humans. This in turn measurably reduces the utility of users who interact with the system hoping to get novel and diverse generations. Our findings highlight a need for research on techniques that promote creativity in language models, and for evaluating language model outputs beyond the most likely generation.</p>
+            <p>NoveltyBench is a benchmark designed to evaluate language models' ability to generate multiple distinct and high-quality outputs. Unlike traditional benchmarks that assess only the quality of a single "best" generation, NoveltyBench measures both diversity and quality across multiple outputs, addressing the problem of "mode collapse" in modern language models.</p>
+            <img src="img/overall.png" style="width:30%;margin:auto;display:block;"/>
+            <details open>
+              <summary>
+                <strong>Why we build NoveltyBench</strong>
+              </summary>
+              <p></p>
+              <p>Today's language models struggle to produce diverse responses to open-ended prompts. Ask Claude or GPT-4 for vacation recommendations multiple times, and you'll often get variations of the same few destinations, unlike asking different humans who would suggest truly different options. This lack of diversity matters because different users have different needs and preferences. A single "best" answer rarely exists for subjective tasks like recommending books, suggesting creative solutions, or generating stories. When models consistently produce similar outputs, they can't effectively serve the full spectrum of human preferences and may reinforce existing biases by suggesting certain answers are universally "correct."</p>
+              <p>The majority of existing evaluation benchmarks are "mode-seeking", which evaluate models based on their ability to generate a single correct or high-quality response. This creates misaligned incentives for model developers, who focus on improving the quality of the single most likely output rather than ensuring diversity across possible responses.</p>
+            </details>
+            <details open>
+              <summary>
+                <strong>How NoveltyBench works and our key findings</strong>
+              </summary>
+              <p></p>
+              <p>NoveltyBench consists of 1,100 prompts designed to elicit diverse responses, including NB-Curated (100 manually crafted prompts that span four categories: randomness, factual knowledge, creativity, and subjectivity) and NB-WildChat (1,000 prompts collected from real user interactions with ChatGPT).</p>
+              <p>We instroduce two metrics to address the limitations of traditional diversity measures: (1) distinct<sub>k</sub>, which counts the number of functionally equivalent classes among k sample generations by partitioning the output space based on functional equivalence between pairs of generations (rather than just surface-level differences); and (2) utility<sub>k</sub>, which combines novelty and quality by modeling the cumulative utility for a user who observes multiple generations with diminishing returns for seeing responses from the same equivalence class, thus rewarding models that can produce outputs that are both diverse and high-quality.</p>
+              <p>Our evaluation of 20 leading language models reveals four key findings: (1) state-of-the-art models generate significantly less diversity than humans, producing on average fewer than 4 distinct responses in 10 samples; (2) smaller models often demonstrate greater diversity than their larger counterparts within the same family; (3) larger models' utility degrades more quickly when users demand diverse outputs due to their propensity for mode collapse; and (4) while prompt engineering techniques like in-context regeneration can partially improve diversity, these findings reveal a fundamental lack of distributional diversity in current models, suggesting the need for new training paradigms that prioritize creativity alongside quality.</p>
+            </details>
           </div>
         </div>
         <div class="content-wrapper">

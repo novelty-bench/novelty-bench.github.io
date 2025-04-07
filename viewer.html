@@ -82,7 +82,7 @@
             color: #ff4f4f;
         }
 
-        /* New styles for view mode toggle */
+        /* View mode toggle styles */
         .view-mode-container {
             margin-bottom: 2em;
             text-align: center;
@@ -132,11 +132,11 @@
         }
 
         .mode-icon {
-            margin-right: 6px;
+            margin-right: 12px;
             font-size: 1em;
         }
 
-        /* Dataset selection styles for comparison mode */
+        /* Dataset selection styles */
         .dataset-selection {
             margin-bottom: 1.5em;
             padding: 1.5em;
@@ -182,7 +182,6 @@
             align-items: flex-start;
             gap: 1.5em;
             width: auto;
-            flex: 1;
         }
 
         .model-selection-box h3 {
@@ -200,7 +199,6 @@
             gap: 1em;
             flex: 1;
             min-width: 0;
-            width: 100%;
             overflow: hidden;
         }
 
@@ -307,7 +305,15 @@
             font-size: 1em;
         }
 
-        /* Add CSS for the load more button */
+        /* Hide analysis elements by default */
+        #displaySelections,
+        .prompt-sidebar,
+        .comparison-container,
+        .analysis-container {
+            display: none;
+        }
+
+        /* Load More Button */
         .load-more-btn {
             width: 100%;
             padding: 10px;
@@ -321,18 +327,41 @@
         .load-more-btn:hover {
             background-color: #e0e0e0;
         }
+
+        /* Interpretation Guide */
+        .interpretation-guide {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 2em;
+            margin: 2em 0;
+        }
+
+        .interpretation-guide h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .interpretation-guide p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+
+        .interpretation-guide ul {
+            padding-left: 1.5em;
+        }
+
+        .interpretation-guide li {
+            margin-bottom: 0.5em;
+        }
     </style>
 </head>
 <body>
     <div style="padding-bottom: 50px">
     <section style="background-color: var(--dark_accent_color)">
-        <div
-            class="content-wrapper title-wrapper"
-            style="flex-direction: column;text-align: center;"
-        >
+        <div class="content-wrapper title-wrapper" style="flex-direction: column;text-align: center;">
             <h1 style="font-size: 60px; padding-top: 0.4em">NoveltyBench Analysis</h1>
             <p style="width: 80%; margin: 1em auto; font-size: 1.1em; line-height: 1.5;">
-                Select the subset, model provider, and variant below to get automated analyses of the model's performance on NoveltyBench.
+                Select the subset, model provider, and variant below to get automated analyses of the model's performance on NoveltyBench. Click the "Load Data" button to see the results.
             </p>
             <div class="content-wrapper" style="margin-top: 2em">
                 <a href="index.html">
@@ -353,6 +382,11 @@
                 <a href="submit.html">
                     <button class="outline">
                         <i class="fa fa-upload"></i> Submit&nbsp;
+                    </button>
+                </a>
+                <a href="viewer.html">
+                    <button class="outline">
+                        <i class="fa fa-chart-simple"></i> Analysis&nbsp;
                     </button>
                 </a>
             </div>
@@ -438,6 +472,23 @@
 
             <button id="loadData" class="load-data-button" disabled>Load Data</button>
         </div>
+
+        <!-- Interpretation Guide -->
+        <div class="interpretation-guide">
+            <h3>Understanding the NoveltyBench Results</h3>
+            <p></p>
+            <p><strong>What are partitions?</strong> Partitions represent functionally equivalent classes of responses. We argue that true diversity should go beyond surface-level differences (like paraphrasing or minor wording changes), since such variations provide little utility to the user. Therefore, we mainly consider functional equivalence, which defines two generations to be different if and only if a user who has seen one generation would likely benefit from seeing the other. To implement this concept, we annotated pairs of generations and used this labeled data to train a DeBERTa-v3-large model to predict binary functional equivalence between two generations. For each new generation, we compare it against a random generation from each existing partition—if it's functionally equivalent to any existing class, we assign it there; otherwise, we create a new partition. This approach allows us to measure meaningful diversity rather than trivial variations.</p>
+            
+            <p><strong>What is the utility score?</strong> The utility score measures the combined diversity and quality of a model's responses. It's based on a user model that assumes users have a "patience level" (p=0.8) — after seeing each generation, they might continue to request another or stop entirely. The score rewards both novel and high-quality responses while giving zero value to responses that are functionally equivalent to those already seen. We calculate this by combining: (1) a quality score for each generation (from a reward model calibrated to output values between 1-10), (2) whether the generation belongs to a new partition, and (3) the diminishing probability that a user would actually see later generations. The result is a single number that represents how much cumulative value a user would get from multiple generations, with higher scores indicating better performance.</p>
+            
+            <p><strong>Interpreting the results:</strong>
+                <ul>
+                    <li>Number of partitions: More partitions indicate greater diversity in responses</li>
+                    <li>Utility score: Higher scores mean better combined diversity and quality</li>
+                    <li>When comparing models, those with more partitions and higher utility scores are better at providing varied, high-quality responses</li>
+                </ul>
+            </p>
+        </div>
     
         <!-- New Analysis Container with Sidebar -->
         <div class="content-wrapper analysis-container">
@@ -453,10 +504,6 @@
                     's performance on NoveltyBench.
                 </div>
 
-                <!-- <div class="content-box" id="readme">
-                    Loading README.md...
-                </div> -->
-                
                 <div class="bottom-container">
                     <!-- Left Sidebar -->
                     <div class="prompt-sidebar">
@@ -476,12 +523,9 @@
                         </div>
                     </div>
                 </div>
-
             </div>
-            
         </div>
     </section>
-
     </div>
 
     <script src="js/mainResults.js"></script>
@@ -879,6 +923,12 @@ document.getElementById('loadData').addEventListener('click', async () => {
     document.getElementById('selectedModel1').textContent = fullPath1;
     
     try {
+        // Show analysis elements
+        document.querySelector('.analysis-container').style.display = 'block';
+        document.getElementById('displaySelections').style.display = 'block';
+        document.querySelector('.prompt-sidebar').style.display = 'block';
+        document.querySelector('.comparison-container').style.display = 'flex';
+        
         // Reset pagination state when loading new data
         currentPage = 0;
         
