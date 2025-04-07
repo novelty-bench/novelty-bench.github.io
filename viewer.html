@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>NoveltyBench</title>
+    <meta
+      name="description"
+      content="NoveltyBench"
+    />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+    />
+    <meta property="og:image" content="/logo.png" />
+    <link rel="shortcut icon" href="favicon-nb.ico" type="image/x-icon" />
+    <link rel="icon" href="favicon-nb.ico" type="image/x-icon" />
+    <link rel="stylesheet" href="css/normalize.css" />
+    <link rel="stylesheet" href="css/fonts.css" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="stylesheet" href="css/viewer.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css"
+      integrity="..."
+      crossorigin="anonymous"
+    />
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-H9XFCMDPNS"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-H9XFCMDPNS");
+    </script>
+    <!-- Custom Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .comparison-container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+        
+        .partition-display {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .model-comparison .partition-display {
+            max-width: 50%;
+        }
+
+        .partition-card {
+            position: relative;
+        }
+
+        .model-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .model1-indicator {
+            background-color: rgba(12, 167, 255, 0.1);
+            color: #0ca7ff;
+        }
+
+        .model2-indicator {
+            background-color: rgba(255, 79, 79, 0.1);
+            color: #ff4f4f;
+        }
+
+        /* New styles for view mode toggle */
+        .view-mode-container {
+            margin-bottom: 2em;
+            text-align: center;
+        }
+
+        .view-mode-description {
+            margin: 1em auto;
+            max-width: 1000px;
+            padding: 1.5em;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            font-size: 1em;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .view-mode-toggle {
+            display: inline-flex;
+            background-color: #f0f0f0;
+            padding: 4px;
+            border-radius: 20px;
+            margin: 1em 0;
+        }
+
+        .view-mode-toggle label {
+            position: relative;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 16px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .view-mode-toggle input[type="radio"] {
+            display: none;
+        }
+
+        .view-mode-toggle input[type="radio"]:checked + label {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+
+        .view-mode-toggle label:hover:not(:has(+ input[type="radio"]:checked)) {
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .mode-icon {
+            margin-right: 6px;
+            font-size: 1em;
+        }
+
+        /* Dataset selection styles for comparison mode */
+        .dataset-selection {
+            margin-bottom: 1.5em;
+            padding: 1.5em;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .dataset-selection label {
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 1em;
+        }
+
+        .dataset-selection select {
+            font-size: 1em;
+            padding: 0.5em;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            min-width: 200px;
+        }
+
+        .models-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2em;
+        }
+
+        .model-selection-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            min-width: 200px;
+            max-width: 350px;
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5em;
+            width: auto;
+            flex: 1;
+        }
+
+        .model-selection-box h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.1em;
+            min-width: 60px;
+            flex-shrink: 0;
+            padding-top: 0.5em;
+        }
+
+        .model-selection-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .model-selection-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5em;
+            margin: 0;
+            width: 100%;
+            min-width: 0;
+            overflow: hidden;
+        }
+
+        .model-selection-row label {
+            font-size: 1em;
+            min-width: 50px;
+            text-align: left;
+            color: #333;
+            flex-shrink: 0;
+        }
+
+        .model-selection-row select {
+            font-size: 1em;
+            padding: 0.5em;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            width: 100%;
+            min-width: 0;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .selection-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.5em;
+            margin-bottom: 2em;
+        }
+
+        .selection-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .selection-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 1em;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            max-width: 300px;
+            width: auto;
+        }
+
+        .selection-item label {
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .selection-item select {
+            min-width: 120px;
+            max-width: 180px;
+            padding: 0.5em;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-size: 1em;
+        }
+
+        /* Load Data Button Styles */
+        .load-data-button {
+            background-color: var(--dark_accent_color);
+            color: white;
+            font-size: 1em;
+            padding: 0.8em 2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .load-data-button:hover:not(:disabled) {
+            background-color: var(--accent_color);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .load-data-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Consistent font size for all elements */
+        select, input, button, label {
+            font-size: 1em;
+        }
+
+        /* Add CSS for the load more button */
+        .load-more-btn {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .load-more-btn:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <div style="padding-bottom: 50px">
+    <section style="background-color: var(--dark_accent_color)">
+        <div
+            class="content-wrapper title-wrapper"
+            style="flex-direction: column;text-align: center;"
+        >
+            <h1 style="font-size: 60px; padding-top: 0.4em">NoveltyBench Analysis</h1>
+            <p style="width: 80%; margin: 1em auto; font-size: 1.1em; line-height: 1.5;">
+                Select the subset, model provider, and variant below to get automated analyses of the model's performance on NoveltyBench.
+            </p>
+            <div class="content-wrapper" style="margin-top: 2em">
+                <a href="index.html">
+                    <button class="outline">
+                        <i class="fa fa-home"></i> Home&nbsp;
+                    </button>
+                </a>
+                <a href="https://arxiv.org/abs/2310.06770" style="display: none;">
+                    <button class="outline">
+                        <i class="fa fa-paperclip"></i> Paper&nbsp;
+                    </button>
+                </a>
+                <a href="https://github.com/novelty-bench/novelty-bench">
+                    <button class="outline">
+                        <i class="fab fa-github"></i> Code&nbsp;
+                    </button>
+                </a>
+                <a href="submit.html">
+                    <button class="outline">
+                        <i class="fa fa-upload"></i> Submit&nbsp;
+                    </button>
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <section class="main-container">
+        <div class="content-wrapper" style="display: flex; justify-content: center; align-items: center;">
+            <!-- Removing the old content box from here -->
+        </div>
+        <div style="text-align: center; margin: 1em 0 1.5em 0;">
+            <!-- Enhanced View Mode Toggle -->
+            <div class="view-mode-container">
+                <div class="view-mode-toggle">
+                    <input type="radio" id="single-mode" name="view-mode" value="single" checked>
+                    <label for="single-mode">
+                        <i class="fas fa-cube mode-icon"></i>Single Model Analysis
+                    </label>
+                    <input type="radio" id="compare-mode" name="view-mode" value="compare">
+                    <label for="compare-mode">
+                        <i class="fas fa-code-compare mode-icon"></i>Model Comparison
+                    </label>
+                </div>
+                <div class="view-mode-description">
+                    <div id="single-mode-desc" style="display: block;">
+                        <strong>Single Model Analysis:</strong> Analyze one model's performance in detail, viewing its responses and partitions for each prompt.
+                    </div>
+                    <div id="compare-mode-desc" style="display: none;">
+                        <strong>Model Comparison:</strong> Compare two different models' responses side by side on the same dataset, allowing for direct performance comparison on identical prompts.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dataset and Model Selection Container -->
+            <div class="selection-container">
+                <div class="selection-row">
+                    <div class="selection-item">
+                        <label for="dataset-select">Dataset:</label>
+                        <select id="dataset-select">
+                            <option value="">Select a dataset...</option>
+                            <option value="curated">NB-Curated</option>
+                            <option value="wildchat">NB-WildChat</option>
+                        </select>
+                    </div>
+
+                    <div class="model-selection-box">
+                        <h3>Model 1</h3>
+                        <div class="model-selection-content">
+                            <div class="model-selection-row">
+                                <label for="model-family-select-1">Provider:</label>
+                                <select id="model-family-select-1" class="model-select" disabled>
+                                    <option value="">Select a model provider...</option>
+                                </select>
+                            </div>
+                            <div class="model-selection-row">
+                                <label for="model-select-1">Variant:</label>
+                                <select id="model-select-1" class="model-select" disabled>
+                                    <option value="">Select a variant...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-selection-box" id="model2-family-container" style="display: none;">
+                        <h3>Model 2</h3>
+                        <div class="model-selection-content">
+                            <div class="model-selection-row">
+                                <label for="model-family-select-2">Provider:</label>
+                                <select id="model-family-select-2" class="model-select" disabled>
+                                    <option value="">Select a model provider...</option>
+                                </select>
+                            </div>
+                            <div class="model-selection-row">
+                                <label for="model-select-2">Variant:</label>
+                                <select id="model-select-2" class="model-select" disabled>
+                                    <option value="">Select a variant...</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button id="loadData" class="load-data-button" disabled>Load Data</button>
+        </div>
+    
+        <!-- New Analysis Container with Sidebar -->
+        <div class="content-wrapper analysis-container">
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div id="displaySelections">
+                    <span id="model1Display">
+                        Viewing <span style="color:#0ca7ff" id="selectedModel1"></span>
+                    </span>
+                    <span id="model2Display" style="display: none;">
+                        vs <span style="color:#ff4f4f" id="selectedModel2"></span>
+                    </span>
+                    's performance on NoveltyBench.
+                </div>
+
+                <!-- <div class="content-box" id="readme">
+                    Loading README.md...
+                </div> -->
+                
+                <div class="bottom-container">
+                    <!-- Left Sidebar -->
+                    <div class="prompt-sidebar">
+                        <input type="text" class="prompt-search" placeholder="Search prompts...">
+                        <ul class="prompt-list" id="promptList">
+                            <!-- Prompts will be loaded here -->
+                        </ul>
+                    </div>
+
+                    <!-- Right Partition -->
+                    <div class="comparison-container">
+                        <div id="partition-display" class="partition-display">
+                            <!-- Partitions will be loaded here -->
+                        </div>
+                        <div id="partition-display-2" class="partition-display" style="display: none;">
+                            <!-- Second model partitions will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+        </div>
+    </section>
+
+    </div>
+
+    <script src="js/mainResults.js"></script>
+    <script src="js/tableByRepo.js"></script>
+    <script src="js/tableByYear.js"></script>
+
+<script>
+
+async function getDirectoryContents(path) {
+    try {
+        const response = await fetch(`${path}/index.json`);  // Fetch the JSON index
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return await response.json();  // Parse JSON
+    } catch (error) {
+        console.error(`Error fetching directory contents for ${path}:`, error);
+        return [];
+    }
+}
+
+async function loadModelFamilies(dataset) {
+    try {
+        const families = await getDirectoryContents(`eval-0327/eval/${dataset}`);
+        const familySelect = document.getElementById('model-family-select-1');
+
+        // Reset and populate the select element
+        familySelect.innerHTML = '<option value="">Select a model provider...</option>';
+        families.forEach(family => {
+            const option = document.createElement('option');
+            option.value = family;
+            option.textContent = family;
+            familySelect.appendChild(option);
+        });
+
+        familySelect.disabled = false;
+
+        // Reset model select and disable it
+        const modelSelect = document.getElementById('model-select-1');
+        modelSelect.innerHTML = '<option value="">Select a variant...</option>';
+        modelSelect.disabled = true;
+
+        // Disable the load button
+        document.getElementById('loadData').disabled = true;
+    } catch (error) {
+        console.error('Error loading model families:', error);
+    }
+}
+
+async function loadModels(dataset, family) {
+    try {
+        const models = await getDirectoryContents(`eval-0327/eval/${dataset}/${family}/`);
+        const modelSelect = document.getElementById('model-select-1');
+        
+        // Reset the select element
+        modelSelect.innerHTML = '<option value="">Select a variant...</option>';
+        
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelSelect.appendChild(option);
+        });
+        
+        modelSelect.disabled = false;
+    } catch (error) {
+        console.error('Error loading models:', error);
+    }
+}
+
+document.getElementById('dataset-select').addEventListener('change', async (e) => {
+    const datasetValue = e.target.value;
+    const familySelect1 = document.getElementById('model-family-select-1');
+    const modelSelect1 = document.getElementById('model-family-select-1');
+    const familySelect2 = document.getElementById('model-family-select-2');
+    const modelSelect2 = document.getElementById('model-select-2');
+    const loadButton = document.getElementById('loadData');
+    
+    if (datasetValue) {
+        // Load families for both models
+        await loadModelFamilies(datasetValue);
+        if (document.getElementById('compare-mode').checked) {
+            await loadModelFamilies2(datasetValue);
+        }
+    } else {
+        // Reset both models' selections
+        [familySelect1, familySelect2].forEach(select => {
+            if (select) {
+                select.innerHTML = '<option value="">Select a model provider...</option>';
+                select.disabled = true;
+            }
+        });
+        [modelSelect1, modelSelect2].forEach(select => {
+            if (select) {
+                select.innerHTML = '<option value="">Select a variant...</option>';
+                select.disabled = true;
+            }
+        });
+        loadButton.disabled = true;
+    }
+});
+
+document.getElementById('model-family-select-1').addEventListener('change', async (e) => {
+    const familyValue = e.target.value;
+    const datasetValue = document.getElementById('dataset-select').value;
+    const modelSelect = document.getElementById('model-select-1');
+    const loadButton = document.getElementById('loadData');
+    
+    if (familyValue) {
+        await loadModels(datasetValue, familyValue);
+    } else {
+        modelSelect.innerHTML = '<option value="">Select a variant...</option>';
+        modelSelect.disabled = true;
+        loadButton.disabled = true;
+    }
+});
+
+document.getElementById('model-select-1').addEventListener('change', (e) => {
+    const modelValue = e.target.value;
+    const loadButton = document.getElementById('loadData');
+    loadButton.disabled = !modelValue;
+});
+
+async function loadPromptData(datasetPath) {
+    const url = `eval-0327/eval/${datasetPath}/partitions.jsonl`;
+    console.log("Fetching:", url);
+
+    try {
+        const response = await fetch(url);
+
+        // If file is missing (404), show a message and stop execution
+        if (!response.ok) {
+            if (response.status === 404) {
+                console.warn(`File not found: ${url}`);
+                document.getElementById('promptList').innerHTML =
+                    `<li class="prompt-item">No partition data available.</li>`;
+                document.getElementById('partition-display').innerHTML =
+                    `<div class="no-data-message">No partitions available for this model.</div>`;
+                return;
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        const text = await response.text();
+        console.log("Fetched data:", text);
+
+        const lines = text.split('\n').filter(line => line.trim());
+        console.log("Parsed lines:", lines);
+
+        const data = lines.map(line => {
+            try {
+                return JSON.parse(line);
+            } catch (e) {
+                console.error('Error parsing line:', line);
+                return null;
+            }
+        }).filter(item => item !== null);
+
+        console.log("Final parsed data:", data);
+
+        // If no valid data, show message
+        if (data.length === 0) {
+            document.getElementById('promptList').innerHTML =
+                `<li class="prompt-item">No partition data available.</li>`;
+            document.getElementById('partition-display').innerHTML =
+                `<div class="no-data-message">No partitions available for this model.</div>`;
+            return;
+        }
+
+        renderPromptList(data);
+
+        if (data.length > 0) {
+            const firstPrompt = document.querySelector('.prompt-item');
+            if (firstPrompt) {
+                firstPrompt.classList.add('active');
+                renderPartitions(data[0]);
+            }
+        }
+    } catch (error) {
+        console.error('Error loading prompt data:', error);
+        document.getElementById('promptList').innerHTML =
+            `<li class="prompt-item">Error loading prompts: ${error.message}</li>`;
+        document.getElementById('partition-display').innerHTML =
+            `<div class="no-data-message">Failed to load partition data.</div>`;
+    }
+}
+
+// Add pagination state
+const PAGE_SIZE = 20;
+let currentPage = 0;
+let allData = [];
+
+async function fetchModelData(datasetPath) {
+    const partitionsUrl = `eval-0327/eval/${datasetPath}/partitions.jsonl`;
+    const scoresUrl = `eval-0327/eval/${datasetPath}/scores.jsonl`;
+    
+    try {
+        // Fetch both files in parallel
+        const [partitionsResponse, scoresResponse] = await Promise.all([
+            fetch(partitionsUrl),
+            fetch(scoresUrl)
+        ]);
+        
+        if (!partitionsResponse.ok) {
+            if (partitionsResponse.status === 404) {
+                console.warn(`File not found: ${partitionsUrl}`);
+                return null;
+            }
+            throw new Error(`HTTP error! Status: ${partitionsResponse.status}`);
+        }
+
+        const partitionsText = await partitionsResponse.text();
+        const partitionsLines = partitionsText.split('\n').filter(line => line.trim());
+        const partitionsData = partitionsLines.map(line => {
+            try {
+                return JSON.parse(line);
+            } catch (e) {
+                console.error('Error parsing partitions line:', line);
+                return null;
+            }
+        }).filter(item => item !== null);
+
+        // Parse scores if available
+        if (scoresResponse.ok) {
+            const scoresText = await scoresResponse.text();
+            const scoresLines = scoresText.split('\n').filter(line => line.trim());
+            const scoresMap = new Map();
+            
+            scoresLines.forEach(line => {
+                try {
+                    const scoreData = JSON.parse(line);
+                    scoresMap.set(scoreData.prompt, scoreData.utility);
+                } catch (e) {
+                    console.error('Error parsing scores line:', line);
+                }
+            });
+
+            // Attach scores to partitions data
+            partitionsData.forEach(item => {
+                item.utility = scoresMap.get(item.prompt);
+            });
+        }
+
+        return partitionsData;
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        return null;
+    }
+}
+
+function renderPromptList(data) {
+    const list = document.getElementById('promptList');
+    const startIdx = currentPage * PAGE_SIZE;
+    const endIdx = Math.min(startIdx + PAGE_SIZE, data.length);
+    const pageData = data.slice(startIdx, endIdx);
+    
+    // Remove existing Load More button if it exists
+    const existingLoadMoreBtn = list.querySelector('.load-more-btn');
+    if (existingLoadMoreBtn) {
+        existingLoadMoreBtn.remove();
+    }
+    
+    // Only clear the list when starting from page 0
+    if (currentPage === 0) {
+        list.innerHTML = '';
+    }
+    
+    pageData.forEach((item, index) => {
+        const li = document.createElement('li');
+        li.className = 'prompt-item';
+        const promptPreview = item.prompt.length > 50 ? 
+            item.prompt.substring(0, 50) + '...' : 
+            item.prompt;
+        li.textContent = promptPreview;
+        li.dataset.prompt = item.prompt;
+        li.onclick = () => {
+            document.querySelectorAll('.prompt-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            li.classList.add('active');
+            
+            const data1 = window.promptMap.get(item.prompt);
+            if (data1) {
+                renderPartitions(data1, false);
+            }
+            
+            const isCompareMode = document.getElementById('compare-mode').checked;
+            if (isCompareMode && window.promptMap2) {
+                const data2 = window.promptMap2.get(item.prompt);
+                if (data2) {
+                    renderPartitions(data2, true);
+                }
+            }
+        };
+        list.appendChild(li);
+    });
+
+    // Add Load More button if there are more items
+    if (endIdx < data.length) {
+        const loadMoreBtn = document.createElement('button');
+        loadMoreBtn.textContent = 'Load More';
+        loadMoreBtn.className = 'load-more-btn';
+        loadMoreBtn.onclick = () => {
+            currentPage++;
+            renderPromptList(data);
+        };
+        list.appendChild(loadMoreBtn);
+    }
+}
+
+function renderPartitions(promptData, isSecondModel = false) {
+    const displayId = isSecondModel ? 'partition-display-2' : 'partition-display';
+    const display = document.getElementById(displayId);
+    const modelIndicatorClass = isSecondModel ? 'model2-indicator' : 'model1-indicator';
+    const modelLabel = isSecondModel ? 'Model 2' : 'Model 1';
+    
+    // Create container elements
+    const summaryDiv = document.createElement('div');
+    summaryDiv.className = 'partition-summary';
+    summaryDiv.innerHTML = `
+        <div style="display: flex">
+            <div style="font-weight: bold; min-width: fit-content">Prompt:</div>
+            <div style="flex: 1; margin-left: 8px">${promptData.prompt}</div>
+        </div>
+        <div>
+            <span style="font-weight: bold">Number of Partitions:</span> ${promptData.partition ? Math.max(...promptData.partition) + 1 : 0}
+        </div>
+        <div>
+            <span style="font-weight: bold">Utility Score:</span> ${promptData.utility !== undefined ? promptData.utility.toFixed(4) : 'N/A'}
+        </div>
+    `;
+    
+    const gridDiv = document.createElement('div');
+    gridDiv.className = 'partition-grid';
+    
+    // Clear previous content and add summary
+    display.innerHTML = '';
+    display.appendChild(summaryDiv);
+    display.appendChild(gridDiv);
+    
+    if (promptData.partition && promptData.generations) {
+        // Group generations by partition ID
+        const partitionMap = new Map();
+        promptData.partition.forEach((partitionId, index) => {
+            if (!partitionMap.has(partitionId)) {
+                partitionMap.set(partitionId, []);
+            }
+            partitionMap.get(partitionId).push(promptData.generations[index]);
+        });
+        
+        // Sort partition IDs numerically
+        const partitionIds = Array.from(partitionMap.keys()).sort((a, b) => a - b);
+        
+        // Create and append partition cards
+        partitionIds.forEach(partitionId => {
+            const partition = partitionMap.get(partitionId);
+            const card = document.createElement('div');
+            card.className = 'partition-card';
+            card.innerHTML = `
+                <div class="model-indicator ${modelIndicatorClass}">${modelLabel}</div>
+                <div class="partition-header" style="margin-bottom: 15px">
+                    <span style="font-weight: bold">Partition ${partitionId + 1} :</span>
+                    <span>${partition.length} generations</span>
+                </div>
+                <button onclick="togglePartition(${partitionId}, ${isSecondModel})" class="toggle-btn" style="min-width: 160px; border-radius: 8px; border: none; box-shadow: 0 1px 3px rgba(0,0,0,0.1)">
+                    Show Generations
+                </button>
+                <div id="partition-content-${isSecondModel ? '2-' : ''}${partitionId}" class="partition-content">
+                    ${partition.map(generation => 
+                        `<div class="generation-item">${generation}</div>`
+                    ).join('')}
+                </div>
+            `;
+            gridDiv.appendChild(card);
+        });
+    }
+}
+
+function togglePartition(partitionIdx, isSecondModel = false) {
+    const contentId = `partition-content-${isSecondModel ? '2-' : ''}${partitionIdx}`;
+    const content = document.getElementById(contentId);
+    const expanded = content.classList.toggle('expanded');
+    const btn = content.previousElementSibling;
+    btn.textContent = expanded ? 'Hide Generations' : 'Show Generations';
+}
+
+document.getElementById('loadData').addEventListener('click', async () => {
+    const isCompareMode = document.getElementById('compare-mode').checked;
+    const dataset = document.getElementById('dataset-select').value;
+    
+    // Load first model
+    const family1 = document.getElementById('model-family-select-1').value;
+    const model1 = document.getElementById('model-select-1').value;
+    const fullPath1 = `${dataset}/${family1}/${model1}`;
+    document.getElementById('selectedModel1').textContent = fullPath1;
+    
+    try {
+        // Reset pagination state when loading new data
+        currentPage = 0;
+        
+        // First load the data for model 1 and store it
+        const data1 = await fetchModelData(fullPath1);
+        if (!data1 || data1.length === 0) {
+            throw new Error('No data available for model 1');
+        }
+        
+        // Create a map of prompts for model 1 for quick lookup
+        window.promptMap = new Map(data1.map(item => [item.prompt, item]));
+        
+        // Store the full data for pagination
+        window.fullData = data1;
+        
+        // Render the prompt list using model 1's data
+        renderPromptList(data1);
+        const firstPrompt = document.querySelector('.prompt-item');
+        if (firstPrompt) {
+            firstPrompt.classList.add('active');
+        }
+        
+        // Render partitions for model 1
+        renderPartitions(data1[0], false);
+        
+        if (isCompareMode) {
+            // Load second model
+            const family2 = document.getElementById('model-family-select-2').value;
+            const model2 = document.getElementById('model-select-2').value;
+            const fullPath2 = `${dataset}/${family2}/${model2}`;
+            document.getElementById('selectedModel2').textContent = fullPath2;
+            
+            const data2 = await fetchModelData(fullPath2);
+            if (data2 && data2.length > 0) {
+                // Find matching prompt data for the first displayed prompt
+                const matchingData = data2.find(item => item.prompt === data1[0].prompt);
+                if (matchingData) {
+                    renderPartitions(matchingData, true);
+                }
+                // Store model 2's data in a map for quick lookup
+                window.promptMap2 = new Map(data2.map(item => [item.prompt, item]));
+            }
+        }
+    } catch (error) {
+        console.error('Error loading data:', error);
+        document.getElementById('partition-display').innerHTML = 
+            `<div class="no-data-message">Error loading data: ${error.message}</div>`;
+    }
+});
+
+// Update prompt list click handler to use prompt text matching
+document.querySelector('.prompt-list').addEventListener('click', async (e) => {
+    if (e.target.classList.contains('prompt-item')) {
+        // Update active state
+        document.querySelectorAll('.prompt-item').forEach(item => item.classList.remove('active'));
+        e.target.classList.add('active');
+
+        const promptText = e.target.dataset.prompt;
+        const isCompareMode = document.getElementById('compare-mode').checked;
+        
+        try {
+            // Get data for model 1 from the prompt map
+            const data1 = window.promptMap.get(promptText);
+            if (data1) {
+                renderPartitions(data1, false);
+            }
+            
+            // If in compare mode, get matching data for model 2
+            if (isCompareMode && window.promptMap2) {
+                const data2 = window.promptMap2.get(promptText);
+                if (data2) {
+                    renderPartitions(data2, true);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading prompt data:', error);
+        }
+    }
+});
+
+document.querySelector('.prompt-search').addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase();
+    const items = document.querySelectorAll('.prompt-item');
+    
+    items.forEach(item => {
+        const text = item.textContent.toLowerCase();
+        item.style.display = text.includes(searchTerm) ? 'block' : 'none';
+    });
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // No default selections - user must select dataset first
+    document.getElementById('model-family-select-1').disabled = true;
+    document.getElementById('model-select-1').disabled = true;
+    document.getElementById('loadData').disabled = true;
+});
+
+// Update view mode toggle to use radio buttons
+document.querySelectorAll('input[name="view-mode"]').forEach(radio => {
+    radio.addEventListener('change', function(e) {
+        const isCompareMode = e.target.value === 'compare';
+        
+        // Update descriptions visibility
+        document.getElementById('single-mode-desc').style.display = isCompareMode ? 'none' : 'block';
+        document.getElementById('compare-mode-desc').style.display = isCompareMode ? 'block' : 'none';
+        
+        // Update model 2 visibility and ensure consistent styling
+        const model2Container = document.getElementById('model2-family-container');
+        model2Container.style.display = isCompareMode ? 'flex' : 'none'; // Changed to flex to match Model 1
+        document.getElementById('model2Display').style.display = isCompareMode ? 'inline' : 'none';
+        document.getElementById('partition-display-2').style.display = isCompareMode ? 'block' : 'none';
+        document.querySelector('.comparison-container').classList.toggle('model-comparison', isCompareMode);
+        
+        // Reset model 2 selections when switching to single mode
+        if (!isCompareMode) {
+            document.getElementById('model-family-select-2').value = '';
+            document.getElementById('model-select-2').value = '';
+            document.getElementById('model-family-select-2').disabled = true;
+            document.getElementById('model-select-2').disabled = true;
+        } else {
+            // When switching to compare mode, load model families for model 2 if dataset is selected
+            const datasetValue = document.getElementById('dataset-select').value;
+            if (datasetValue) {
+                loadModelFamilies2(datasetValue);
+            }
+        }
+        
+        updateLoadButtonState();
+    });
+});
+
+// Add event listeners for model 2 selections
+document.getElementById('model-family-select-2').addEventListener('change', async (e) => {
+    const familyValue = e.target.value;
+    const datasetValue = document.getElementById('dataset-select').value;
+    const modelSelect = document.getElementById('model-select-2');
+    
+    if (familyValue) {
+        await loadModels2(datasetValue, familyValue);
+    } else {
+        modelSelect.innerHTML = '<option value="">Select a variant...</option>';
+        modelSelect.disabled = true;
+    }
+    updateLoadButtonState();
+});
+
+document.getElementById('model-select-2').addEventListener('change', () => {
+    updateLoadButtonState();
+});
+
+async function loadModelFamilies2(dataset) {
+    try {
+        const families = await getDirectoryContents(`eval-0327/eval/${dataset}`);
+        const familySelect = document.getElementById('model-family-select-2');
+        
+        familySelect.innerHTML = '<option value="">Select a model provider...</option>';
+        families.forEach(family => {
+            const option = document.createElement('option');
+            option.value = family;
+            option.textContent = family;
+            familySelect.appendChild(option);
+        });
+        
+        familySelect.disabled = false;
+        
+        const modelSelect = document.getElementById('model-select-2');
+        modelSelect.innerHTML = '<option value="">Select a variant...</option>';
+        modelSelect.disabled = true;
+    } catch (error) {
+        console.error('Error loading model families:', error);
+    }
+}
+
+async function loadModels2(dataset, family) {
+    try {
+        const models = await getDirectoryContents(`eval-0327/eval/${dataset}/${family}/`);
+        const modelSelect = document.getElementById('model-select-2');
+        
+        modelSelect.innerHTML = '<option value="">Select a variant...</option>';
+        models.forEach(model => {
+            const option = document.createElement('option');
+            option.value = model;
+            option.textContent = model;
+            modelSelect.appendChild(option);
+        });
+        
+        modelSelect.disabled = false;
+    } catch (error) {
+        console.error('Error loading models:', error);
+    }
+}
+
+function updateLoadButtonState() {
+    const isCompareMode = document.getElementById('compare-mode').checked;
+    const datasetReady = document.getElementById('dataset-select').value !== '';
+    const model1Ready = document.getElementById('model-select-1').value !== '';
+    const model2Ready = document.getElementById('model-select-2').value !== '';
+    
+    document.getElementById('loadData').disabled = !(datasetReady && model1Ready && (isCompareMode ? model2Ready : true));
+}
+
+</script>
+
+</body>
+</html>
