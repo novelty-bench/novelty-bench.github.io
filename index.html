@@ -116,8 +116,8 @@
                       <table class="table" style="font-weight: normal;">  <!-- Added font-weight normal -->
                         <thead>
                           <tr>
-                              <th><div class="sticky-header-content">Model Family</div></th>
-                              <th><div class="sticky-header-content">Variant</div></th>
+                              <th><div class="sticky-header-content sortable" data-sort="family">Model Family <span class="sort-icon">↕</span></div></th>
+                              <th><div class="sticky-header-content sortable" data-sort="variant">Variant <span class="sort-icon">↕</span></div></th>
                               <th><div class="sticky-header-content sortable" data-sort="distinct">Mean distinct<sub>10</sub> <span class="sort-icon">↕</span></div></th>
                               <th><div class="sticky-header-content sortable" data-sort="utility">Mean utility<sub>10</sub> <span class="sort-icon">↕</span></div></th>
                               <th><div class="sticky-header-content">Date</div></th>
@@ -389,12 +389,44 @@
           const tbody = table.querySelector('tbody');
           const rows = Array.from(tbody.querySelectorAll('tr'));
           
-          // Get the column index
-          const columnIndex = column === 'distinct' ? 2 : 3;
+          // Get the column index based on the column name
+          let columnIndex;
+          switch(column) {
+            case 'family':
+              columnIndex = 0;
+              break;
+            case 'variant':
+              columnIndex = 1;
+              break;
+            case 'distinct':
+              columnIndex = 2;
+              break;
+            case 'utility':
+              columnIndex = 3;
+              break;
+            default:
+              columnIndex = 0;
+          }
           
           rows.sort((a, b) => {
-            const aValue = parseFloat(a.cells[columnIndex].textContent);
-            const bValue = parseFloat(b.cells[columnIndex].textContent);
+            let aValue, bValue;
+            
+            if (column === 'distinct' || column === 'utility') {
+              // Numeric sorting for metrics
+              aValue = parseFloat(a.cells[columnIndex].textContent);
+              bValue = parseFloat(b.cells[columnIndex].textContent);
+            } else {
+              // Text sorting for model family and variant
+              aValue = a.cells[columnIndex].textContent.trim().toLowerCase();
+              bValue = b.cells[columnIndex].textContent.trim().toLowerCase();
+              
+              // For text comparison
+              if (aValue < bValue) return direction === 'asc' ? -1 : 1;
+              if (aValue > bValue) return direction === 'asc' ? 1 : -1;
+              return 0;
+            }
+            
+            // For numeric comparison
             return direction === 'asc' ? aValue - bValue : bValue - aValue;
           });
           
