@@ -57,9 +57,9 @@
             <h1 style="font-size: 60px; padding-top: 0.4em">NoveltyBench</h1>
           </div>
           <h3>Evaluating Creativity and Diversity in Language Models</h3>
-          <h3 style="font-size: 20px; padding-top: 1.2em">Under Review</h3>
+          <!-- <h3 style="font-size: 20px; padding-top: 1.2em">Under Review</h3> -->
           <p style="text-align: center;margin-top:1em;">
-            Yiming Zhang*, Harshita Diddee, Susan Holm, Hanchen Liu, Xinyue Liu, Vinay Samuel, Barry Wang, Daphne Ippolito
+            Yiming Zhang, Harshita Diddee, Susan Holm, Hanchen Liu, Xinyue Liu, Vinay Samuel, Barry Wang, Daphne Ippolito
           </p>
           <div class="content-wrapper" style="margin-top: 2em">
             <a href="index.html">
@@ -77,6 +77,11 @@
                 <i class="fab fa-github"></i> Code&nbsp;
               </button>
             </a>
+            <a href="https://huggingface.co/datasets/yimingzhang/novelty-bench">
+              <button class="outline">
+                <i class="fa fa-database"></i> Data&nbsp;
+              </button>
+            </a>
             <a href="submit.html">
               <button class="outline">
                 <i class="fa fa-upload"></i> Submit&nbsp;
@@ -92,27 +97,27 @@
       </section>
       <section class="main-container">
         <div class="content-wrapper" style="display: flex; justify-content: center; align-items: center;">
-          <div class="content-box">
+          <!-- <div class="content-box">
             <h2 class="text-title">News</h2>
             <p style="margin-bottom: 0.5em">
               📣 [03/2025] We've released <b>NoveltyBench</b>!
             </p>
-          </div>
+          </div> -->
         </div>
         <div class="content-wrapper">
           <div class="content-box leaderboard">
               <h2 class="text-title">Leaderboard</h2>
-              <p><i>distinct<sub>k</sub></i>: the average number of distinct generations out of k generations.</p>
+              <p><strong>distinct<sub>k</sub></strong>: the average number of distinct generations out of k generations.</p>
               <p></p>
-              <p><i>utility<sub>k</sub></i>: the cumulative utility out of k generations.</p>
+              <p><strong>utility<sub>k</sub></strong>: the cumulative utility out of k generations.</p>
               <p></p>
               <div class="tabcontent" style="display: block" id="leaderboard">
                   <div class="scrollable">  <!-- Scrollable div wraps the table -->
                       <table class="table" style="font-weight: normal;">  <!-- Added font-weight normal -->
                         <thead>
                           <tr>
-                              <th><div class="sticky-header-content">Model Provider</div></th>
-                              <th><div class="sticky-header-content">Variants</div></th>
+                              <th><div class="sticky-header-content">Model Family</div></th>
+                              <th><div class="sticky-header-content">Variant</div></th>
                               <th><div class="sticky-header-content sortable" data-sort="distinct">Mean distinct<sub>10</sub> <span class="sort-icon">↕</span></div></th>
                               <th><div class="sticky-header-content sortable" data-sort="utility">Mean utility<sub>10</sub> <span class="sort-icon">↕</span></div></th>
                               <th><div class="sticky-header-content">Date</div></th>
@@ -307,38 +312,54 @@
       </div>
         <div class="content-wrapper">
           <div class="content-box">
-            <h2 class="text-title">Resources</h2>
-            <p>You can download all the prompts in NoveltyBench from 🤗HuggingFace. [<a href="https://huggingface.co/datasets/yimingzhang/novelty-bench" class="light-blue-link">Link</a>]</p>
-          </div>
-        </div>
-        <div class="content-wrapper">
-          <div class="content-box">
-            <h2 class="text-title">About the NoveltyBench</h2>
-            <p>NoveltyBench is a benchmark designed to evaluate language models' ability to generate multiple distinct and high-quality outputs. Unlike traditional benchmarks that assess only the quality of a single "best" generation, NoveltyBench measures both diversity and quality across multiple outputs, addressing the problem of "mode collapse" in modern language models.</p>
-            <img src="img/overall.png" style="width:30%;margin:auto;display:block;"/>
+            <h2 class="text-title">What is NoveltyBench?</h2>
+            <p>NoveltyBench is a benchmark designed to evaluate language models' ability to generate simultaneously distinct and high-quality outputs.
+              We set out to evaluate language models not only by what they can generate, but also by what they <strong><i>cannot</i></strong> generate.
+            Specifically, unlike conventional benchmarks that assess only the quality of a single "best" generation, we measure both diversity and quality over the output distribution.</p>
+            <img src="img/overall.png" style="width:50%;margin:auto;display:block;"/>
             <details open>
               <summary>
-                <strong>Why we build NoveltyBench</strong>
+                <strong>Why NoveltyBench?</strong>
               </summary>
               <p></p>
-              <p>Today's language models struggle to produce diverse responses to open-ended prompts. Ask Claude or GPT-4 for vacation recommendations multiple times, and you'll often get variations of the same few destinations, unlike asking different humans who would suggest truly different options. This lack of diversity matters because different users have different needs and preferences. A single "best" answer rarely exists for subjective tasks like recommending books, suggesting creative solutions, or generating stories. When models consistently produce similar outputs, they can't effectively serve the full spectrum of human preferences and may reinforce existing biases by suggesting certain answers are universally "correct."</p>
-              <p>The majority of existing evaluation benchmarks are "mode-seeking", which evaluate models based on their ability to generate a single correct or high-quality response. This creates misaligned incentives for model developers, who focus on improving the quality of the single most likely output rather than ensuring diversity across possible responses.</p>
+              <p>It is well-known that today's language models suffer from <strong><i>mode collapse</i></strong>, the inability to produce a variety of outputs even when diversity is expected.
+                Ask Claude or GPT-4 for vacation recommendations multiple times, and you'll often get variations of the same few destinations, unlike asking different humans who would suggest a wide range of options.</p>
+                <p>
+                This lack of diversity matters because different users have different needs and preferences. A single "best" answer rarely exists for subjective tasks like recommending books, suggesting creative solutions to puzzles, or generating stories with unique twists. When models consistently produce similar outputs, they can't effectively serve the full spectrum of human preferences and may reinforce existing biases by suggesting certain answers are universally "correct."</p>
+              <p>Notably, the majority of existing evaluation benchmarks are "mode-seeking", which evaluate models based on their ability to generate exactly one correct or high-quality response. This creates misaligned incentives for model developers, who focus on improving the quality of the single most likely output rather than ensuring diversity across possible responses.</p>
             </details>
             <details open>
               <summary>
-                <strong>How NoveltyBench works and our key findings</strong>
+                <strong>How does it work?</strong>
               </summary>
               <p></p>
-              <p>NoveltyBench consists of 1,100 prompts designed to elicit diverse responses, including NB-Curated (100 manually crafted prompts that span four categories: randomness, factual knowledge, creativity, and subjectivity) and NB-WildChat (1,000 prompts collected from real user interactions with ChatGPT).</p>
-              <p>We instroduce two metrics to address the limitations of traditional diversity measures: (1) distinct<sub>k</sub>, which counts the number of functionally equivalent classes among k sample generations by partitioning the output space based on functional equivalence between pairs of generations (rather than just surface-level differences); and (2) utility<sub>k</sub>, which combines novelty and quality by modeling the cumulative utility for a user who observes multiple generations with diminishing returns for seeing responses from the same equivalence class, thus rewarding models that can produce outputs that are both diverse and high-quality.</p>
-              <p>Our evaluation of 20 leading language models reveals four key findings: (1) state-of-the-art models generate significantly less diversity than humans, producing on average fewer than 4 distinct responses in 10 samples; (2) smaller models often demonstrate greater diversity than their larger counterparts within the same family; (3) larger models' utility degrades more quickly when users demand diverse outputs due to their propensity for mode collapse; and (4) while prompt engineering techniques like in-context regeneration can partially improve diversity, these findings reveal a fundamental lack of distributional diversity in current models, suggesting the need for new training paradigms that prioritize creativity alongside quality.</p>
+              <p>NoveltyBench consists of 1,100 prompts designed to elicit diverse responses, including <strong>NB-Curated</strong> (100 manually crafted prompts that span four categories: randomness, factual knowledge, creative writing, and subjectivity) and <strong>NB-WildChat</strong> (1,000 prompts collected from real user interactions with ChatGPT).
+              We introduce two metrics to address the limitations of traditional diversity measures:</p>
+              <ul>
+                <li><strong><i>distinct<sub>k</sub></i></strong>, which counts the number of "meaningfully" distinct responses a model generates in k samples.</li>
+                <li><strong><i>utility<sub>k</sub></i></strong>, which unifies generation novelty and quality by modeling the cumulative utility for a user who only benefits from an additional generation when it is distinct from the previous generations.</li>
+              </ul>
+            </details>
+            
+            <details open>
+              <summary>
+                <strong>Key Findings</strong>
+              </summary>
+              <p></p>
+              <p>Our evaluation of 20 leading language models reveals four key findings:</p>
+              <ul>
+                <li>State-of-the-art models generate significantly less diversity than humans, producing on average fewer than 4 distinct responses in 10 samples.</li>
+                <li>Novelty seems to <strong>scale inversely</strong> with model size, with smaller models often demonstrating greater diversity than their larger counterparts within the same family. Utility of larger models degrades more quickly when users demand diverse outputs due to their propensity for mode collapse.</li>
+                <li>While prompt engineering techniques like in-context regeneration can partially improve diversity, our findings nevertheless reveal a fundamental lack in distributional diversity in current models, suggesting the need for new training paradigms that prioritize diversity alongside quality.</li>
+              </ul>
             </details>
           </div>
         </div>
         <div class="content-wrapper">
           <div class="content-box">
             <h2 class="text-title">Acknowledgements</h2>
-            <p>This website is derived from the SWE-bench leaderboard framework, used with the explicit permission of the SWE-bench team. We thank them for their work in creating and sharing the template.</p>
+            <p>This website is based on the SWE-bench leaderboard, used with the permission of the SWE-bench team.
+              We thank them for their work in creating and sharing the template.</p>
           </div>
         </div>
       </section>

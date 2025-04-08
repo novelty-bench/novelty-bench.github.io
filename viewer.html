@@ -379,6 +379,11 @@
                         <i class="fab fa-github"></i> Code&nbsp;
                     </button>
                 </a>
+                <a href="https://huggingface.co/datasets/yimingzhang/novelty-bench">
+                    <button class="outline">
+                        <i class="fa fa-database"></i> Data&nbsp;
+                    </button>
+                </a>
                 <a href="submit.html">
                     <button class="outline">
                         <i class="fa fa-upload"></i> Submit&nbsp;
@@ -475,11 +480,13 @@
 
         <!-- Interpretation Guide -->
         <div class="interpretation-guide">
-            <h3>Understanding the NoveltyBench Results</h3>
-            <p></p>
-            <p><strong>What are partitions?</strong> Partitions represent functionally equivalent classes of responses. We argue that true diversity should go beyond surface-level differences (like paraphrasing or minor wording changes), since such variations provide little utility to the user. Therefore, we mainly consider functional equivalence, which defines two generations to be different if and only if a user who has seen one generation would likely benefit from seeing the other. To implement this concept, we annotated pairs of generations and used this labeled data to train a DeBERTa-v3-large model to predict binary functional equivalence between two generations. For each new generation, we compare it against a random generation from each existing partition—if it's functionally equivalent to any existing class, we assign it there; otherwise, we create a new partition. This approach allows us to measure meaningful diversity rather than trivial variations.</p>
+            <h3 style="margin-bottom: 1.2em;">Understanding the NoveltyBench Results</h3>
+            <p><strong>What are partitions?</strong> Partitions represent functionally equivalent classes of responses. We argue that true diversity should go beyond surface-level differences (like paraphrasing or minor wording changes), since such variations provide little utility to the user. Therefore, we mainly consider functional equivalence, which defines two generations to be different if and only if a user who has seen one generation would likely benefit from seeing the other. To implement this idea, we annotated pairs of generations and used this labeled data to train a DeBERTa-v3-large model to predict binary functional equivalence between two generations. For each new generation, we compare it against a random generation from each existing partition—if it's functionally equivalent to any existing class, we assign it there; otherwise, we create a new partition. This approach allows us to measure meaningful diversity rather than trivial variations.</p>
             
-            <p><strong>What is the utility score?</strong> The utility score measures the combined diversity and quality of a model's responses. It's based on a user model that assumes users have a "patience level" (p=0.8) — after seeing each generation, they might continue to request another or stop entirely. The score rewards both novel and high-quality responses while giving zero value to responses that are functionally equivalent to those already seen. We calculate this by combining: (1) a quality score for each generation (from a reward model calibrated to output values between 1-10), (2) whether the generation belongs to a new partition, and (3) the diminishing probability that a user would actually see later generations. The result is a single number that represents how much cumulative value a user would get from multiple generations, with higher scores indicating better performance.</p>
+            <p><strong>What is the utility score?</strong> The utility score measures the combined diversity and quality of a model's responses. It's based on a user model that assumes users have a "patience level" (p=0.8 in our experiments) — after seeing each generation, they might continue to request another or stop entirely.
+            Naturally, we apply a geometric discount to the utility of later generations.
+            The cumulative utility score takes into account both novel and high-quality responses by assigning zero utility to responses that are functionally equivalent to those already seen. We calculate this by combining: (1) a quality score for each generation (from a reward model calibrated to output values between 1-10), (2) whether the generation belongs to a new partition, and (3) the diminishing probability that a user would actually see later generations.
+            The result is a single number that represents how much cumulative value a user would get from multiple generations, with higher scores indicating better performance.</p>
             
             <p><strong>Interpreting the results:</strong>
                 <ul>

@@ -41,9 +41,15 @@ a {
 }
 
 body {
-  font-family: "DIN", "DM-Sans", "Lato", sans-serif;
+  font-family: "et-book", Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
   font-size: 16px;
   color: var(--black);
+}
+
+/* Apply the book-like font to main content only */
+.main-container {
+  padding-top: 1em;
+  font-family: "et-book", Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
 }
 
 .content-wrapper {
@@ -122,10 +128,6 @@ h1.logo {
   justify-content: center;
   padding: 2em 5em;
   color: white;
-}
-
-.main-container {
-  padding-top: 1em;
 }
 
 h2.text-title {
