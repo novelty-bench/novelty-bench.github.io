@@ -42,8 +42,8 @@ a {
 
 body {
   font-family: "et-book", Palatino, "Palatino Linotype", "Palatino LT STD", "Book Antiqua", Georgia, serif;
-  font-size: 16px;
-  color: var(--black);
+  font-size: 18px; 
+  color: #333333; 
 }
 
 /* Apply the book-like font to main content only */
@@ -131,17 +131,22 @@ h1.logo {
 }
 
 h2.text-title {
-  font-size: 1.33em;
+  font-size: 1.5em; 
   font-weight: bold;
-  color: var(--black);
+  color: var(#444444);
   padding: 0.2em 0;
-  margin-bottom: 0.3em;
+  margin-bottom: 0.5em;
+}
+
+h3 {
+  font-size: 1.4em;
+  margin-bottom: 0.4em;
 }
 
 .text-content {
-  font-size: 0.95em;
-  line-height: 1.6667em;
-  font-weight: 500;
+  font-size: 1em;
+  line-height: 1.6;
+  font-weight: 400; 
   text-align: left;
   padding: 1em 0;
 }
@@ -283,7 +288,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   border: 1px solid var(--grey2);
   text-align: center !important;
   font-weight: normal !important;
-  font-size: 16px !important;
+  font-size: 18px !important;
   font-family: inherit !important;
   line-height: 1.5;
 }
@@ -487,7 +492,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 .intro-text {
   width: 90%;
   margin: 1em auto;
-  font-size: 1.1em;
+  font-size: 1em;
   line-height: 1.5;
   text-align: center;
 }
@@ -506,7 +511,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 @media (max-width: 480px) {
   .intro-text {
     width: 100%;
-    font-size: 0.95em;
+    font-size: 1em;
     padding: 0 10px;
   }
   
@@ -522,6 +527,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     padding: 0.75em;
   }
   
+
   h2.text-title {
     font-size: 1.2em;
   }
