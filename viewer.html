@@ -566,12 +566,26 @@ async function getDirectoryContents(path) {
 
 async function loadModelFamilies(dataset) {
     try {
-        const families = await getDirectoryContents(`eval-0327/eval/${dataset}`);
+        // Get all available eval dates
+        const evalDates = await getDirectoryContents('eval');
+        let allFamilies = new Set();
+        
+        // Collect all families across all eval dates for this dataset
+        for (const evalDate of evalDates) {
+            try {
+                const families = await getDirectoryContents(`eval/${evalDate}/${dataset}`);
+                families.forEach(family => allFamilies.add(family));
+            } catch (e) {
+                // Skip if this eval date doesn't have this dataset
+                console.log(`No ${dataset} data for ${evalDate}`);
+            }
+        }
+        
         const familySelect = document.getElementById('model-family-select-1');
 
         // Reset and populate the select element
         familySelect.innerHTML = '<option value="">Select a model provider...</option>';
-        families.forEach(family => {
+        Array.from(allFamilies).sort().forEach(family => {
             const option = document.createElement('option');
             option.value = family;
             option.textContent = family;
@@ -594,13 +608,35 @@ async function loadModelFamilies(dataset) {
 
 async function loadModels(dataset, family) {
     try {
-        const models = await getDirectoryContents(`eval-0327/eval/${dataset}/${family}/`);
+        // Get all available eval dates
+        const evalDates = await getDirectoryContents('eval');
+        let allModels = new Map(); // Map to store model -> evalDate for path resolution
+        
+        // Collect all models across all eval dates for this family
+        for (const evalDate of evalDates) {
+            try {
+                const models = await getDirectoryContents(`eval/${evalDate}/${dataset}/${family}/`);
+                models.forEach(model => {
+                    if (!allModels.has(model)) {
+                        allModels.set(model, evalDate); // Store the first (latest) eval date where this model appears
+                    }
+                });
+            } catch (e) {
+                // Skip if this eval date doesn't have this family
+                console.log(`No ${family} data for ${evalDate}`);
+            }
+        }
+        
+        // Store the model -> evalDate mapping for later use
+        window.modelToEvalDate = window.modelToEvalDate || {};
+        window.modelToEvalDate[`${dataset}/${family}`] = allModels;
+        
         const modelSelect = document.getElementById('model-select-1');
         
         // Reset the select element
         modelSelect.innerHTML = '<option value="">Select a variant...</option>';
         
-        models.forEach(model => {
+        Array.from(allModels.keys()).sort().forEach(model => {
             const option = document.createElement('option');
             option.value = model;
             option.textContent = model;
@@ -736,8 +772,22 @@ let currentPage = 0;
 let allData = [];
 
 async function fetchModelData(datasetPath) {
-    const partitionsUrl = `eval-0327/eval/${datasetPath}/partitions.jsonl`;
-    const scoresUrl = `eval-0327/eval/${datasetPath}/scores.jsonl`;
+    // Parse the datasetPath to extract dataset, family, and model
+    const pathParts = datasetPath.split('/');
+    const dataset = pathParts[0];
+    const family = pathParts[1];
+    const model = pathParts[2];
+    
+    // Find the correct eval date for this model
+    const modelMap = window.modelToEvalDate[`${dataset}/${family}`];
+    const evalDate = modelMap ? modelMap.get(model) : null;
+    
+    if (!evalDate) {
+        throw new Error(`Could not find evaluation data for ${datasetPath}`);
+    }
+    
+    const partitionsUrl = `eval/${evalDate}/${datasetPath}/partitions.jsonl`;
+    const scoresUrl = `eval/${evalDate}/${datasetPath}/scores.jsonl`;
     
     try {
         // Fetch both files in parallel
@@ -1098,11 +1148,25 @@ document.getElementById('model-select-2').addEventListener('change', () => {
 
 async function loadModelFamilies2(dataset) {
     try {
-        const families = await getDirectoryContents(`eval-0327/eval/${dataset}`);
+        // Get all available eval dates
+        const evalDates = await getDirectoryContents('eval');
+        let allFamilies = new Set();
+        
+        // Collect all families across all eval dates for this dataset
+        for (const evalDate of evalDates) {
+            try {
+                const families = await getDirectoryContents(`eval/${evalDate}/${dataset}`);
+                families.forEach(family => allFamilies.add(family));
+            } catch (e) {
+                // Skip if this eval date doesn't have this dataset
+                console.log(`No ${dataset} data for ${evalDate}`);
+            }
+        }
+        
         const familySelect = document.getElementById('model-family-select-2');
         
         familySelect.innerHTML = '<option value="">Select a model provider...</option>';
-        families.forEach(family => {
+        Array.from(allFamilies).sort().forEach(family => {
             const option = document.createElement('option');
             option.value = family;
             option.textContent = family;
@@ -1121,11 +1185,33 @@ async function loadModelFamilies2(dataset) {
 
 async function loadModels2(dataset, family) {
     try {
-        const models = await getDirectoryContents(`eval-0327/eval/${dataset}/${family}/`);
+        // Get all available eval dates
+        const evalDates = await getDirectoryContents('eval');
+        let allModels = new Map(); // Map to store model -> evalDate for path resolution
+        
+        // Collect all models across all eval dates for this family
+        for (const evalDate of evalDates) {
+            try {
+                const models = await getDirectoryContents(`eval/${evalDate}/${dataset}/${family}/`);
+                models.forEach(model => {
+                    if (!allModels.has(model)) {
+                        allModels.set(model, evalDate); // Store the first (latest) eval date where this model appears
+                    }
+                });
+            } catch (e) {
+                // Skip if this eval date doesn't have this family
+                console.log(`No ${family} data for ${evalDate}`);
+            }
+        }
+        
+        // Store the model -> evalDate mapping for later use (for model 2)
+        window.modelToEvalDate = window.modelToEvalDate || {};
+        window.modelToEvalDate[`${dataset}/${family}`] = allModels;
+        
         const modelSelect = document.getElementById('model-select-2');
         
         modelSelect.innerHTML = '<option value="">Select a variant...</option>';
-        models.forEach(model => {
+        Array.from(allModels.keys()).sort().forEach(model => {
             const option = document.createElement('option');
             option.value = model;
             option.textContent = model;
