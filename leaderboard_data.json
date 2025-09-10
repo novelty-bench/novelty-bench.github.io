@@ -1,0 +1,197 @@
+{
+  "generated_at": "2025-09-09T23:27:12.263574",
+  "models": [
+    {
+      "family": "Google",
+      "variant": "gemma-2-2b-it",
+      "open": true,
+      "distinct": 5.66,
+      "utility": 4.63,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-2-9b-it",
+      "open": true,
+      "distinct": 3.25,
+      "utility": 3.93,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-2-27b-it",
+      "open": true,
+      "distinct": 3.03,
+      "utility": 3.77,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.1-8B-Instruct",
+      "open": true,
+      "distinct": 5.24,
+      "utility": 3.76,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.1-405B-Instruct",
+      "open": true,
+      "distinct": 3.2,
+      "utility": 3.39,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Cohere",
+      "variant": "command-r7b-12-2024",
+      "open": false,
+      "distinct": 3.58,
+      "utility": 3.35,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-4o-2024-11-20",
+      "open": false,
+      "distinct": 2.88,
+      "utility": 3.27,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.2-3B-Instruct",
+      "open": true,
+      "distinct": 5.1,
+      "utility": 3.24,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-2.0-flash-lite-preview-02-05",
+      "open": false,
+      "distinct": 2.83,
+      "utility": 3.2,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-2.0-flash",
+      "open": false,
+      "distinct": 2.81,
+      "utility": 3.17,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-4o-mini-2024-07-18",
+      "open": false,
+      "distinct": 2.65,
+      "utility": 3.11,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Cohere",
+      "variant": "command-r-plus-08-2024",
+      "open": false,
+      "distinct": 2.79,
+      "utility": 3.08,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Cohere",
+      "variant": "command-r-08-2024",
+      "open": false,
+      "distinct": 2.68,
+      "utility": 2.98,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.3-70B-Instruct",
+      "open": true,
+      "distinct": 2.49,
+      "utility": 2.87,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.2-1B-Instruct",
+      "open": true,
+      "distinct": 6.74,
+      "utility": 2.81,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-1.5-pro",
+      "open": false,
+      "distinct": 1.85,
+      "utility": 2.73,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-3-opus@20240229",
+      "open": false,
+      "distinct": 2.04,
+      "utility": 2.67,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-2.0-pro-exp-02-05",
+      "open": false,
+      "distinct": 2.25,
+      "utility": 2.64,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-3-5-haiku@20241022",
+      "open": false,
+      "distinct": 1.94,
+      "utility": 2.5,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-3-5-sonnet-v2@20241022",
+      "open": false,
+      "distinct": 1.76,
+      "utility": 2.36,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-3-4b-it",
+      "open": true,
+      "distinct": 1.81,
+      "utility": 2.2,
+      "date": "2025-09-09"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-3-27b-it",
+      "open": true,
+      "distinct": 1.67,
+      "utility": 2.12,
+      "date": "2025-09-09"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-3-12b-it",
+      "open": true,
+      "distinct": 1.79,
+      "utility": 2.05,
+      "date": "2025-09-09"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-3-1b-it",
+      "open": true,
+      "distinct": 2.27,
+      "utility": 1.84,
+      "date": "2025-09-09"
+    }
+  ]
+}

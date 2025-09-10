@@ -1,0 +1,25 @@
+# Pre-commit hooks configuration
+# Install with: pip install pre-commit && pre-commit install
+
+repos:
+  - repo: local
+    hooks:
+      - id: update-leaderboard-data
+        name: Update leaderboard data
+        entry: python3 generate_leaderboard_data.py
+        language: system
+        files: ^eval/.*\.json$
+        pass_filenames: false
+        always_run: false
+        stages: [commit]
+        description: 'Regenerates leaderboard_data.json when eval data changes'
+        
+      - id: add-leaderboard-data
+        name: Add updated leaderboard data to commit
+        entry: git add leaderboard_data.json
+        language: system
+        files: ^eval/.*\.json$
+        pass_filenames: false
+        always_run: false
+        stages: [commit]
+        description: 'Ensures updated leaderboard_data.json is included in commit'
