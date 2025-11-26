@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-09-10T06:32:22.908919",
+  "generated_at": "2025-11-26T14:11:57.221056",
   "models": [
     {
       "family": "Google",
@@ -40,6 +40,14 @@
       "distinct": 3.2,
       "utility": 3.39,
       "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "CrPO-llama-3.1-8b-instruct-cre",
+      "open": true,
+      "distinct": 7.35,
+      "utility": 3.38,
+      "date": "2025-11-21"
     },
     {
       "family": "Cohere",
