@@ -540,3 +540,24 @@ ul.tab li a:focus, .active {background-color: #ccc;}
     font-size: 0.8em;
   }
 }
+
+/* Model metadata links and citations */
+.model-citation {
+  font-size: 0.85em;
+  color: var(--accent_color);
+  margin-left: 4px;
+}
+
+a.model-citation:hover {
+  text-decoration: underline;
+}
+
+.model-link {
+  color: var(--accent_color);
+  margin-left: 6px;
+  opacity: 0.7;
+}
+
+.model-link:hover {
+  opacity: 1;
+}

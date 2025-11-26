@@ -49,6 +49,17 @@ def load_summary(file_path):
         print(f"Error loading {file_path}: {e}")
         return None
 
+def load_metadata(model_path):
+    """Load metadata.json if it exists."""
+    metadata_file = model_path / 'metadata.json'
+    if metadata_file.exists():
+        try:
+            with open(metadata_file, 'r') as f:
+                return json.load(f)
+        except Exception as e:
+            print(f"Error loading {metadata_file}: {e}")
+    return None
+
 def generate_leaderboard_data():
     """Generate the aggregated leaderboard data."""
     eval_dir = Path('eval')
@@ -95,15 +106,19 @@ def generate_leaderboard_data():
                     
                     if summary_file.exists():
                         summary = load_summary(summary_file)
+                        metadata = load_metadata(model_path)
                         if summary:
-                            all_models.append({
+                            entry = {
                                 'eval_date': eval_date,
                                 'dataset': dataset,
                                 'family': family,
                                 'variant': model,
                                 'mean_distinct': summary.get('mean_distinct'),
                                 'mean_utility': summary.get('mean_utility')
-                            })
+                            }
+                            if metadata:
+                                entry['metadata'] = metadata
+                            all_models.append(entry)
 
     print(f"Loaded {len(all_models)} model entries")
 
@@ -117,15 +132,20 @@ def generate_leaderboard_data():
                 'family': model['family'],
                 'variant': model['variant'],
                 'eval_date': model['eval_date'],
-                'datasets': {}
+                'datasets': {},
+                'metadata': model.get('metadata')
             }
-        
+
         # Store the first (latest) eval date where this model appears
         if model['eval_date'] not in model_groups[key]['datasets']:
             model_groups[key]['datasets'][model['dataset']] = {
                 'distinct': model['mean_distinct'],
                 'utility': model['mean_utility']
             }
+
+        # Capture metadata if not already set
+        if not model_groups[key]['metadata'] and model.get('metadata'):
+            model_groups[key]['metadata'] = model['metadata']
 
     # Calculate weighted averages and create final leaderboard
     leaderboard_data = []
@@ -144,14 +164,17 @@ def generate_leaderboard_data():
             month, day, year = group['eval_date'].split('-')
             formatted_date = f"{year}-{month}-{day}"
             
-            leaderboard_data.append({
+            entry = {
                 'family': format_family_name(group['family']),
                 'variant': group['variant'],
                 'open': is_open_source(group['family'], group['variant']),
                 'distinct': round(weighted_distinct, 2),
                 'utility': round(weighted_utility, 2),
                 'date': formatted_date
-            })
+            }
+            if group.get('metadata'):
+                entry['metadata'] = group['metadata']
+            leaderboard_data.append(entry)
 
     # Sort by utility score (descending)
     leaderboard_data.sort(key=lambda x: x['utility'], reverse=True)

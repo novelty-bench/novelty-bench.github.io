@@ -1,5 +1,5 @@
 {
-  "generated_at": "2025-11-26T22:12:53.659088",
+  "generated_at": "2025-11-26T14:27:39.947185",
   "models": [
     {
       "family": "Google",
@@ -43,11 +43,17 @@
     },
     {
       "family": "Meta",
-      "variant": "CrPO-llama-3.1-8b-instruct-cre",
+      "variant": "CrPO-llama-3.1-8b-instruct",
       "open": true,
       "distinct": 7.35,
       "utility": 3.38,
-      "date": "2025-11-21"
+      "date": "2025-11-21",
+      "metadata": {
+        "paper": "https://www.mete.is/creative-preference-optimization/",
+        "model": "https://huggingface.co/CNCL-Penn-State/CrPO-llama-3.1-8b-instruct-cre",
+        "authors": "Ismayilzada et al.",
+        "submitted_by": "mismayil"
+      }
     },
     {
       "family": "Cohere",

@@ -1,0 +1,6 @@
+{
+  "paper": "https://www.mete.is/creative-preference-optimization/",
+  "model": "https://huggingface.co/CNCL-Penn-State/CrPO-llama-3.1-8b-instruct-cre",
+  "authors": "Ismayilzada et al.",
+  "submitted_by": "mismayil"
+}

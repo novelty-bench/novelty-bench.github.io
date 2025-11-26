@@ -91,20 +91,38 @@ class LeaderboardManager {
         // Render each model
         this.modelData.forEach(model => {
             const row = document.createElement('tr');
-            
-            const openIcon = model.open ? 
-                '<i class="fas fa-check" style="color: green;"></i>' : 
+
+            const openIcon = model.open ?
+                '<i class="fas fa-check" style="color: green;"></i>' :
                 '<i class="fas fa-times" style="color: red;"></i>';
-            
+
+            // Build variant cell with optional metadata links and citation
+            let variantCell = model.variant;
+            if (model.metadata) {
+                let citation = '';
+                if (model.metadata.authors) {
+                    const year = model.date ? model.date.split('-')[0] : '';
+                    const hasPaper = model.metadata.paper;
+                    citation = hasPaper
+                        ? `<a href="${model.metadata.paper}" target="_blank" class="model-citation">(${model.metadata.authors}, ${year})</a>`
+                        : `<span class="model-citation">(${model.metadata.authors}, ${year})</span>`;
+                }
+                let modelLink = '';
+                if (model.metadata.model) {
+                    modelLink = `<a href="${model.metadata.model}" target="_blank" title="Model weights" class="model-link"><i class="fas fa-cube"></i></a>`;
+                }
+                variantCell = `${model.variant} ${citation} ${modelLink}`;
+            }
+
             row.innerHTML = `
                 <td style="text-align: center;">${model.family}</td>
-                <td>${model.variant}</td>
+                <td>${variantCell}</td>
                 <td style="text-align: center;"><span class="open-status ${model.open}">${openIcon}</span></td>
                 <td>${model.distinct}</td>
                 <td>${model.utility}</td>
                 <td><span class="label-date">${model.date}</span></td>
             `;
-            
+
             tbody.appendChild(row);
         });
 
