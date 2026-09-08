@@ -410,11 +410,9 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 
 /* Column widths and alignment */
 .col-rank { width: 44px; text-align: right; }
-.col-family { width: 13%; }
 .col-open { width: 62px; text-align: center; }
-.col-distinct { width: 27%; }
-.col-utility { width: 92px; }
-.col-date { width: 118px; text-align: center; }
+.col-distinct { width: 96px; }
+.col-utility { width: 190px; }
 
 .table td.col-rank {
   font-family: var(--data-font);
@@ -424,13 +422,7 @@ ul.tab li a:focus, .active {background-color: #ccc;}
   text-align: right;
 }
 
-.table td.col-family {
-  color: var(--ink-soft);
-  font-size: 15px;
-}
-
-.table td.col-open,
-.table td.col-date { text-align: center; }
+.table td.col-open { text-align: center; }
 
 .table td.col-distinct,
 .table td.col-utility {
@@ -498,26 +490,30 @@ ul.tab li a:focus, .active {background-color: #ccc;}
 }
 
 /* distinct meter --------------------------------------------------------- */
-.meter {
-  display: inline-flex;
-  gap: 2px;
+.bar {
+  display: inline-block;
+  width: 104px;
+  height: 9px;
+  background: var(--meter-empty);
+  border-radius: 2px;
+  overflow: hidden;
   vertical-align: middle;
+  margin-right: 9px;
 }
 
-.meter .cell {
-  --fill: 0%;
+.bar i {
   display: block;
-  width: 7px;
-  height: 17px;
-  border-radius: 1.5px;
-  background: linear-gradient(
-    to top,
-    var(--violet) var(--fill),
-    var(--meter-empty) var(--fill)
-  );
+  height: 100%;
+  background: var(--violet);
 }
 
-.meter .cell.is-full { --fill: 100%; }
+.model-meta {
+  display: block;
+  font-family: var(--data-font);
+  font-size: 12px;
+  color: var(--ink-faint);
+  margin-top: 2px;
+}
 
 /* Model names ------------------------------------------------------------ */
 .model-name { line-height: 1.35; }
@@ -747,18 +743,15 @@ a.model-citation:hover {
   opacity: 1;
 }
 
-/* Narrow screens: the meter is the first thing to go, since the number beside
-   it carries the same value. Family folds into the system name's context. */
+/* Narrow screens: the bar goes first, since the number beside it says the same. */
 @media (max-width: 760px) {
   .table thead th,
   .table td { padding: 9px 10px; }
-  .col-family { display: none; }
-  .col-distinct .num { margin-left: 0; }
-  .meter { display: none; }
+  .bar { display: none; }
+  .col-utility { width: 84px; }
   .group-count { float: none; display: block; margin-top: 3px; }
 }
 
 @media (max-width: 480px) {
-  .col-date { display: none; }
   .segment { padding: 8px 11px; font-size: 13px; }
 }

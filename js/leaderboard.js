@@ -134,26 +134,13 @@ class LeaderboardManager {
     });
   }
 
-  // distinct is a mean count out of K, so the trailing cell is partly filled.
-  meter(value) {
-    const clamped = Math.max(0, Math.min(K, value));
-    const whole = Math.floor(clamped);
-    const remainder = clamped - whole;
-    let cells = '';
-    for (let i = 0; i < K; i += 1) {
-      if (i < whole) {
-        cells += '<i class="cell is-full"></i>';
-      } else if (i === whole && remainder > 0.02) {
-        cells += `<i class="cell" style="--fill:${(remainder * 100).toFixed(
-          0
-        )}%"></i>`;
-      } else {
-        cells += '<i class="cell"></i>';
-      }
-    }
-    return `<span class="meter" role="img" aria-label="${value.toFixed(
+  // utility orders the table, so it carries the visual weight.
+  // It is a continuous 0-K score, so a continuous bar - not discrete cells.
+  bar(value) {
+    const pct = (Math.max(0, Math.min(K, value)) / K) * 100;
+    return `<span class="bar" role="img" aria-label="${value.toFixed(
       2
-    )} of ${K} distinct">${cells}</span>`;
+    )} of ${K} utility"><i style="width:${pct.toFixed(1)}%"></i></span>`;
   }
 
   variantCell(model) {
@@ -176,7 +163,8 @@ class LeaderboardManager {
       meta && meta.base_model
         ? `<span class="model-base">runs on ${meta.base_model}</span>`
         : '';
-    return `<div class="model-name">${name}</div>${base}`;
+    const meta2 = [model.family, model.date].filter(Boolean).join(' · ');
+    return `<div class="model-name">${name}</div>${base}<span class="model-meta">${meta2}</span>`;
   }
 
   row(model, rank) {
@@ -186,16 +174,14 @@ class LeaderboardManager {
     return `
       <tr>
         <td class="col-rank">${rank}</td>
-        <td class="col-family">${model.family}</td>
         <td class="col-variant">${this.variantCell(model)}</td>
         <td class="col-open"><span class="open-status ${model.open}">${openMark}</span></td>
-        <td class="col-distinct">${this.meter(
-          model.distinct
-        )}<span class="num">${model.distinct.toFixed(2)}</span></td>
-        <td class="col-utility"><span class="num">${model.utility.toFixed(
+        <td class="col-distinct"><span class="num">${model.distinct.toFixed(
           2
         )}</span></td>
-        <td class="col-date"><span class="label-date">${model.date}</span></td>
+        <td class="col-utility">${this.bar(
+          model.utility
+        )}<span class="num">${model.utility.toFixed(2)}</span></td>
       </tr>`;
   }
 
