@@ -1,137 +1,244 @@
-// Fast Dynamic Leaderboard System for NoveltyBench
-// Uses pre-computed aggregated data for blazing fast loading
+// Leaderboard rendering for NoveltyBench.
+//
+// Entries are grouped by comparison category. A raw model sampled ten times and
+// a scaffold making many calls per prompt are not the same kind of thing, so
+// each is ranked within its own group rather than against the others.
+
+const K = 10; // generations per prompt; distinct is a count out of this
 
 class LeaderboardManager {
-    constructor() {
-        this.modelData = [];
-        this.cache = new Map();
+  constructor() {
+    this.models = [];
+    this.categories = [];
+    this.filter = 'all';
+    this.sort = { column: 'utility', direction: 'desc' };
+  }
+
+  async init() {
+    await this.loadLeaderboardData();
+    this.buildControls();
+    this.bindSorting();
+    this.render();
+  }
+
+  async loadLeaderboardData() {
+    try {
+      const response = await fetch('leaderboard_data.json');
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const data = await response.json();
+      this.models = data.models || [];
+      this.categories = data.categories || [];
+    } catch (error) {
+      console.error('Could not load leaderboard data:', error);
+      this.models = [];
+      this.categories = [];
     }
+  }
 
-    async init() {
-        console.time('Leaderboard Load Time');
-        await this.loadLeaderboardData();
-        this.renderLeaderboard();
-        console.timeEnd('Leaderboard Load Time');
-    }
+  // Categories that actually have entries, in the order the generator fixed.
+  activeCategories() {
+    return this.categories.filter((c) =>
+      this.models.some((m) => m.category === c.id)
+    );
+  }
 
-    async loadLeaderboardData() {
-        try {
-            // Check browser cache first
-            const cacheKey = 'leaderboard_data';
-            const cachedData = this.getCachedData(cacheKey);
-            
-            if (cachedData) {
-                console.log('⚡ Using cached leaderboard data');
-                this.modelData = cachedData;
-                return;
-            }
+  buildControls() {
+    const mount = document.querySelector('#leaderboard-filter');
+    if (!mount) return;
 
-            // Single HTTP request to load all data with caching headers
-            console.log('🔄 Fetching leaderboard data...');
-            const response = await fetch('leaderboard_data.json', {
-                cache: 'force-cache', // Use browser cache aggressively
-                headers: {
-                    'Cache-Control': 'max-age=300' // 5 minutes browser cache
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            this.modelData = data.models || [];
-            
-            // Cache the data with timestamp
-            this.setCachedData(cacheKey, this.modelData, data.generated_at);
-            
-            console.log(`✅ Loaded ${this.modelData.length} models from aggregated data`);
-        } catch (error) {
-            console.error('❌ Error loading leaderboard data:', error);
-            this.modelData = [];
+    const cats = this.activeCategories();
+    if (cats.length < 2) return; // nothing meaningful to switch between
+
+    const options = [
+      { id: 'all', label: 'All', count: this.models.length },
+      ...cats.map((c) => ({ id: c.id, label: c.label, count: c.count })),
+    ];
+
+    mount.innerHTML = options
+      .map(
+        (o) => `
+        <button type="button" class="segment${o.id === this.filter ? ' is-active' : ''}"
+                data-filter="${o.id}" aria-pressed="${o.id === this.filter}">
+          ${o.label}<span class="segment-count">${o.count}</span>
+        </button>`
+      )
+      .join('');
+
+    mount.addEventListener('click', (event) => {
+      const button = event.target.closest('.segment');
+      if (!button) return;
+      this.filter = button.dataset.filter;
+      mount.querySelectorAll('.segment').forEach((b) => {
+        const on = b.dataset.filter === this.filter;
+        b.classList.toggle('is-active', on);
+        b.setAttribute('aria-pressed', String(on));
+      });
+      this.render();
+    });
+  }
+
+  bindSorting() {
+    document.querySelectorAll('.table .sortable').forEach((header) => {
+      const apply = () => {
+        const column = header.dataset.sort;
+        // Numbers read best highest-first on the first click.
+        const numeric = column === 'distinct' || column === 'utility';
+        this.sort =
+          this.sort.column === column
+            ? {
+                column,
+                direction: this.sort.direction === 'asc' ? 'desc' : 'asc',
+              }
+            : { column, direction: numeric ? 'desc' : 'asc' };
+        this.render();
+      };
+      // These are divs, so they need the button affordances spelled out.
+      header.setAttribute('role', 'button');
+      header.setAttribute('tabindex', '0');
+      header.addEventListener('click', apply);
+      header.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          apply();
         }
+      });
+    });
+  }
+
+  sorted(rows) {
+    const { column, direction } = this.sort;
+    const sign = direction === 'asc' ? 1 : -1;
+    return [...rows].sort((a, b) => {
+      let av = a[column];
+      let bv = b[column];
+      if (column === 'open') {
+        av = av ? 1 : 0;
+        bv = bv ? 1 : 0;
+      }
+      if (typeof av === 'string') return sign * av.localeCompare(bv);
+      return sign * (av - bv);
+    });
+  }
+
+  updateSortIcons() {
+    document.querySelectorAll('.table .sortable').forEach((header) => {
+      const icon = header.querySelector('.sort-icon');
+      if (!icon) return;
+      const active = header.dataset.sort === this.sort.column;
+      icon.textContent = active
+        ? this.sort.direction === 'asc'
+          ? '↑'
+          : '↓'
+        : '↕';
+      header.classList.toggle('is-sorted', active);
+    });
+  }
+
+  // distinct is a mean count out of K, so the trailing cell is partly filled.
+  meter(value) {
+    const clamped = Math.max(0, Math.min(K, value));
+    const whole = Math.floor(clamped);
+    const remainder = clamped - whole;
+    let cells = '';
+    for (let i = 0; i < K; i += 1) {
+      if (i < whole) {
+        cells += '<i class="cell is-full"></i>';
+      } else if (i === whole && remainder > 0.02) {
+        cells += `<i class="cell" style="--fill:${(remainder * 100).toFixed(
+          0
+        )}%"></i>`;
+      } else {
+        cells += '<i class="cell"></i>';
+      }
     }
+    return `<span class="meter" role="img" aria-label="${value.toFixed(
+      2
+    )} of ${K} distinct">${cells}</span>`;
+  }
 
-    getCachedData(key) {
-        const cached = this.cache.get(key);
-        if (!cached) return null;
-        
-        // Check if cache is still valid (5 minutes)
-        const now = Date.now();
-        const cacheAge = now - cached.timestamp;
-        const maxAge = 5 * 60 * 1000; // 5 minutes
-        
-        if (cacheAge > maxAge) {
-            this.cache.delete(key);
-            return null;
-        }
-        
-        return cached.data;
+  variantCell(model) {
+    const meta = model.metadata;
+    let name = model.variant;
+    if (meta) {
+      if (meta.authors) {
+        const year = model.date ? model.date.split('-')[0] : '';
+        const label = `(${meta.authors}, ${year})`;
+        name += meta.paper
+          ? ` <a href="${meta.paper}" target="_blank" rel="noopener" class="model-citation">${label}</a>`
+          : ` <span class="model-citation">${label}</span>`;
+      }
+      if (meta.model) {
+        name += ` <a href="${meta.model}" target="_blank" rel="noopener" title="Model or system" class="model-link"><i class="fas fa-cube"></i></a>`;
+      }
     }
+    // A scaffold's score belongs to the pairing, so name the model underneath.
+    const base =
+      meta && meta.base_model
+        ? `<span class="model-base">runs on ${meta.base_model}</span>`
+        : '';
+    return `<div class="model-name">${name}</div>${base}`;
+  }
 
-    setCachedData(key, data, generatedAt) {
-        this.cache.set(key, {
-            data: data,
-            timestamp: Date.now(),
-            generatedAt: generatedAt
-        });
-    }
+  row(model, rank) {
+    const openMark = model.open
+      ? '<i class="fas fa-check open-yes" title="Open weights"></i>'
+      : '<i class="fas fa-minus open-no" title="Closed weights"></i>';
+    return `
+      <tr>
+        <td class="col-rank">${rank}</td>
+        <td class="col-family">${model.family}</td>
+        <td class="col-variant">${this.variantCell(model)}</td>
+        <td class="col-open"><span class="open-status ${model.open}">${openMark}</span></td>
+        <td class="col-distinct">${this.meter(
+          model.distinct
+        )}<span class="num">${model.distinct.toFixed(2)}</span></td>
+        <td class="col-utility"><span class="num">${model.utility.toFixed(
+          2
+        )}</span></td>
+        <td class="col-date"><span class="label-date">${model.date}</span></td>
+      </tr>`;
+  }
 
-    renderLeaderboard() {
-        const tbody = document.querySelector('.table tbody');
-        if (!tbody) {
-            console.error('Could not find leaderboard tbody');
-            return;
-        }
+  groupHeader(category, count) {
+    const systems = count === 1 ? '1 system' : `${count} systems`;
+    return `
+      <tr class="group-row">
+        <th colspan="7" scope="colgroup">
+          <span class="group-name">${category.label}</span>
+          <span class="group-blurb">${category.blurb}</span>
+          <span class="group-count">${systems}</span>
+        </th>
+      </tr>`;
+  }
 
-        // Data is already sorted by utility score in the aggregated file
-        // Clear existing content
-        tbody.innerHTML = '';
+  render() {
+    const tbody = document.querySelector('.table tbody');
+    if (!tbody) return;
+    this.updateSortIcons();
 
-        // Render each model
-        this.modelData.forEach(model => {
-            const row = document.createElement('tr');
+    const groups =
+      this.filter === 'all'
+        ? this.activeCategories()
+        : this.activeCategories().filter((c) => c.id === this.filter);
 
-            const openIcon = model.open ?
-                '<i class="fas fa-check" style="color: green;"></i>' :
-                '<i class="fas fa-times" style="color: red;"></i>';
+    let html = '';
+    groups.forEach((category) => {
+      const rows = this.sorted(
+        this.models.filter((m) => m.category === category.id)
+      );
+      if (!rows.length) return;
+      html += this.groupHeader(category, rows.length);
+      rows.forEach((model, i) => {
+        html += this.row(model, i + 1);
+      });
+    });
 
-            // Build variant cell with optional metadata links and citation
-            let variantCell = model.variant;
-            if (model.metadata) {
-                let citation = '';
-                if (model.metadata.authors) {
-                    const year = model.date ? model.date.split('-')[0] : '';
-                    const hasPaper = model.metadata.paper;
-                    citation = hasPaper
-                        ? `<a href="${model.metadata.paper}" target="_blank" class="model-citation">(${model.metadata.authors}, ${year})</a>`
-                        : `<span class="model-citation">(${model.metadata.authors}, ${year})</span>`;
-                }
-                let modelLink = '';
-                if (model.metadata.model) {
-                    modelLink = `<a href="${model.metadata.model}" target="_blank" title="Model weights" class="model-link"><i class="fas fa-cube"></i></a>`;
-                }
-                variantCell = `${model.variant} ${citation} ${modelLink}`;
-            }
-
-            row.innerHTML = `
-                <td style="text-align: center;">${model.family}</td>
-                <td>${variantCell}</td>
-                <td style="text-align: center;"><span class="open-status ${model.open}">${openIcon}</span></td>
-                <td>${model.distinct}</td>
-                <td>${model.utility}</td>
-                <td><span class="label-date">${model.date}</span></td>
-            `;
-
-            tbody.appendChild(row);
-        });
-
-        console.log(`Rendered ${this.modelData.length} models in leaderboard`);
-    }
+    tbody.innerHTML =
+      html ||
+      '<tr><td colspan="7" class="empty-row">No systems in this category yet.</td></tr>';
+  }
 }
 
-// Initialize the leaderboard when the page loads
 document.addEventListener('DOMContentLoaded', async () => {
-    const leaderboard = new LeaderboardManager();
-    await leaderboard.init();
+  await new LeaderboardManager().init();
 });

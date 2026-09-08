@@ -1,0 +1,7 @@
+{
+  "model": "https://novamine.ai",
+  "authors": "Panton, Novamine AI",
+  "submitted_by": "Novamine-AI",
+  "base_model": "claude-opus-5",
+  "system": "inference-time scaffold"
+}

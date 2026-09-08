@@ -113,21 +113,29 @@
         <div class="content-wrapper">
           <div class="content-box leaderboard">
               <h2 class="text-title">Leaderboard</h2>
-              <p><strong>distinct<sub>k</sub></strong>: the average number of distinct generations out of k generations.</p>
-              <p></p>
-              <p><strong>utility<sub>k</sub></strong>: the cumulative utility out of k generations.</p>
-              <p></p>
+              <p class="metric-note">
+                <strong>distinct<sub>10</sub></strong> counts how many of ten responses were
+                meaningfully different from one another. <strong>utility<sub>10</sub></strong>
+                credits a response only when it is both good and new to the reader.
+              </p>
+              <p class="metric-note">
+                Systems are ranked within their own category. A model sampled ten times and a
+                scaffold making many calls per prompt answer the benchmark under different
+                budgets, so one combined ranking would flatter the scaffold.
+              </p>
+              <div class="segmented" id="leaderboard-filter" role="group" aria-label="Filter by category"></div>
               <div class="tabcontent" style="display: block" id="leaderboard">
                   <div class="scrollable">  <!-- Scrollable div wraps the table -->
-                      <table class="table" style="font-weight: normal;">  <!-- Added font-weight normal -->
+                      <table class="table">
                         <thead>
                           <tr>
-                              <th><div class="sticky-header-content sortable" data-sort="family">Model family <span class="sort-icon">↕</span></div></th>
-                              <th><div class="sticky-header-content sortable" data-sort="variant">Variant <span class="sort-icon">↕</span></div></th>
-                              <th><div class="sticky-header-content sortable" data-sort="open">Open weight <span class="sort-icon">↕</span></div></th>
-                              <th><div class="sticky-header-content sortable" data-sort="distinct">Mean distinct<sub>10</sub> <span class="sort-icon">↕</span></div></th>
-                              <th><div class="sticky-header-content sortable" data-sort="utility">Mean utility<sub>10</sub> <span class="sort-icon">↕</span></div></th>
-                              <th><div class="sticky-header-content">Date</div></th>
+                              <th class="col-rank"><div class="sticky-header-content">#</div></th>
+                              <th class="col-family"><div class="sticky-header-content sortable" data-sort="family">Family <span class="sort-icon">↕</span></div></th>
+                              <th class="col-variant"><div class="sticky-header-content sortable" data-sort="variant">System <span class="sort-icon">↕</span></div></th>
+                              <th class="col-open"><div class="sticky-header-content sortable" data-sort="open">Open <span class="sort-icon">↕</span></div></th>
+                              <th class="col-distinct"><div class="sticky-header-content sortable" data-sort="distinct">distinct<sub>10</sub> <span class="sort-icon">↕</span></div></th>
+                              <th class="col-utility"><div class="sticky-header-content sortable" data-sort="utility">utility<sub>10</sub> <span class="sort-icon">↕</span></div></th>
+                              <th class="col-date"><div class="sticky-header-content">Evaluated</div></th>
                           </tr>
                       </thead>
                       <tbody>
@@ -192,94 +200,6 @@
         </div>
       </section>
     </div>
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const table = document.querySelector('.table');
-        const headers = table.querySelectorAll('.sortable');
-        let currentSort = { column: null, direction: 'asc' };
-
-        headers.forEach(header => {
-          header.addEventListener('click', () => {
-            const column = header.dataset.sort;
-            const direction = currentSort.column === column && currentSort.direction === 'asc' ? 'desc' : 'asc';
-            
-            // Update sort icons
-            headers.forEach(h => h.querySelector('.sort-icon').textContent = '↕');
-            header.querySelector('.sort-icon').textContent = direction === 'asc' ? '↑' : '↓';
-            
-            // Sort the table
-            sortTable(column, direction);
-            currentSort = { column, direction };
-          });
-        });
-
-        function sortTable(column, direction) {
-          const tbody = table.querySelector('tbody');
-          const rows = Array.from(tbody.querySelectorAll('tr'));
-          
-          // Get the column index based on the column name
-          let columnIndex;
-          switch(column) {
-            case 'family':
-              columnIndex = 0;
-              break;
-            case 'variant':
-              columnIndex = 1;
-              break;
-            case 'open':
-              columnIndex = 2;
-              break;
-            case 'distinct':
-              columnIndex = 3;
-              break;
-            case 'utility':
-              columnIndex = 4;
-              break;
-            default:
-              columnIndex = 0;
-          }
-          
-          rows.sort((a, b) => {
-            let aValue, bValue;
-            
-            if (column === 'distinct' || column === 'utility') {
-              // Numeric sorting for metrics
-              aValue = parseFloat(a.cells[columnIndex].textContent);
-              bValue = parseFloat(b.cells[columnIndex].textContent);
-            } else if (column === 'open') {
-              // Boolean sorting for open status
-              aValue = a.cells[columnIndex].querySelector('.open-status').classList.contains('true') ? 1 : 0;
-              bValue = b.cells[columnIndex].querySelector('.open-status').classList.contains('true') ? 1 : 0;
-            } else {
-              // Text sorting for model family and variant
-              aValue = a.cells[columnIndex].textContent.trim().toLowerCase();
-              bValue = b.cells[columnIndex].textContent.trim().toLowerCase();
-              
-              // For text comparison
-              if (aValue < bValue) return direction === 'asc' ? -1 : 1;
-              if (aValue > bValue) return direction === 'asc' ? 1 : -1;
-              return 0;
-            }
-            
-            // For numeric comparison
-            return direction === 'asc' ? aValue - bValue : bValue - aValue;
-          });
-          
-          // Reorder the rows
-          rows.forEach(row => tbody.appendChild(row));
-        }
-      });
-    </script>
-    <style>
-      .sortable {
-        cursor: pointer;
-        user-select: none;
-      }
-      .sort-icon {
-        margin-left: 5px;
-        font-size: 0.8em;
-      }
-    </style>
     
     <!-- Dynamic leaderboard script -->
     <script src="js/leaderboard.js"></script>
