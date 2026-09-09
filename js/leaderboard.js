@@ -1,8 +1,9 @@
 // Leaderboard rendering for NoveltyBench.
 //
-// Entries are grouped by comparison category. A raw model sampled ten times and
-// a scaffold making many calls per prompt are not the same kind of thing, so
-// each is ranked within its own group rather than against the others.
+// "All" is a single global ranking, so a sort applies to every row. A raw model
+// sampled ten times and a scaffold making many calls per prompt are not the same
+// kind of thing, so non-raw rows are labelled where they sit; the segmented
+// control still ranks a single category on its own.
 
 const K = 10; // generations per prompt; distinct is a count out of this
 
@@ -164,7 +165,18 @@ class LeaderboardManager {
         ? `<span class="model-base">runs on ${meta.base_model}</span>`
         : '';
     const meta2 = [model.family, model.date].filter(Boolean).join(' · ');
-    return `<div class="model-name">${name}</div>${base}<span class="model-meta">${meta2}</span>`;
+    return `<div class="model-name">${name}</div>${base}${this.badge(model)}<span class="model-meta">${meta2}</span>`;
+  }
+
+  // Raw models are the unmarked default; anything else says what it is, so a
+  // scaffold is never read as a plain model just because it outranks one.
+  badge(model) {
+    if (!model.category || model.category === 'raw') return '';
+    const label =
+      model.category === 'inference-time'
+        ? 'inference-time system'
+        : 'training-time method';
+    return `<span class="cat-badge">${label}</span>`;
   }
 
   row(model, rank) {
@@ -189,7 +201,7 @@ class LeaderboardManager {
     const systems = count === 1 ? '1 system' : `${count} systems`;
     return `
       <tr class="group-row">
-        <th colspan="7" scope="colgroup">
+        <th colspan="5" scope="colgroup">
           <span class="group-name">${category.label}</span>
           <span class="group-blurb">${category.blurb}</span>
           <span class="group-count">${systems}</span>
@@ -202,26 +214,26 @@ class LeaderboardManager {
     if (!tbody) return;
     this.updateSortIcons();
 
-    const groups =
-      this.filter === 'all'
-        ? this.activeCategories()
-        : this.activeCategories().filter((c) => c.id === this.filter);
-
     let html = '';
-    groups.forEach((category) => {
+    if (this.filter === 'all') {
+      // One ranking over every entry, so a header click orders the whole table.
+      this.sorted(this.models).forEach((model, i) => {
+        html += this.row(model, i + 1);
+      });
+    } else {
+      const category = this.activeCategories().find((c) => c.id === this.filter);
       const rows = this.sorted(
-        this.models.filter((m) => m.category === category.id)
+        this.models.filter((m) => m.category === this.filter)
       );
-      if (!rows.length) return;
-      html += this.groupHeader(category, rows.length);
+      if (category && rows.length) html += this.groupHeader(category, rows.length);
       rows.forEach((model, i) => {
         html += this.row(model, i + 1);
       });
-    });
+    }
 
     tbody.innerHTML =
       html ||
-      '<tr><td colspan="7" class="empty-row">No systems in this category yet.</td></tr>';
+      '<tr><td colspan="5" class="empty-row">No systems in this category yet.</td></tr>';
   }
 }
 
