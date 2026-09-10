@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T09:43:06.183705",
+  "generated_at": "2026-09-10T13:44:46.066395",
   "versions": [
     {
       "id": "1.0",
@@ -231,23 +231,6 @@
     },
     {
       "family": "OpenAI",
-      "variant": "gpt-5.6-terra",
-      "sampling": "regenerate",
-      "open": false,
-      "category": "raw",
-      "version": "1.1",
-      "metrics": {
-        "1.1": {
-          "distinct": 2.22,
-          "utility": 2.62
-        }
-      },
-      "distinct": 2.22,
-      "utility": 2.62,
-      "date": "2026-09-10"
-    },
-    {
-      "family": "OpenAI",
       "variant": "gpt-5.6-sol",
       "sampling": "regenerate",
       "open": false,
@@ -260,6 +243,23 @@
         }
       },
       "distinct": 2.16,
+      "utility": 2.62,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-terra",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.22,
+          "utility": 2.62
+        }
+      },
+      "distinct": 2.22,
       "utility": 2.62,
       "date": "2026-09-10"
     },
@@ -455,27 +455,6 @@
       "date": "2025-03-27"
     },
     {
-      "family": "Meta",
-      "variant": "Llama-3.1-8B-Instruct",
-      "sampling": "regenerate",
-      "open": true,
-      "category": "raw",
-      "version": "1.1",
-      "metrics": {
-        "1.0": {
-          "distinct": 5.24,
-          "utility": 3.76
-        },
-        "1.1": {
-          "distinct": 3.74,
-          "utility": 1.81
-        }
-      },
-      "distinct": 3.74,
-      "utility": 1.81,
-      "date": "2025-03-27"
-    },
-    {
       "family": "OpenAI",
       "variant": "gpt-4o-mini-2024-07-18",
       "sampling": "regenerate",
@@ -493,6 +472,27 @@
         }
       },
       "distinct": 2.32,
+      "utility": 1.81,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.1-8B-Instruct",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 5.24,
+          "utility": 3.76
+        },
+        "1.1": {
+          "distinct": 3.74,
+          "utility": 1.81
+        }
+      },
+      "distinct": 3.74,
       "utility": 1.81,
       "date": "2025-03-27"
     },
@@ -518,27 +518,6 @@
       "date": "2025-03-27"
     },
     {
-      "family": "Google",
-      "variant": "gemma-2-2b-it",
-      "sampling": "regenerate",
-      "open": true,
-      "category": "raw",
-      "version": "1.1",
-      "metrics": {
-        "1.0": {
-          "distinct": 5.66,
-          "utility": 4.63
-        },
-        "1.1": {
-          "distinct": 3.64,
-          "utility": 1.76
-        }
-      },
-      "distinct": 3.64,
-      "utility": 1.76,
-      "date": "2025-03-27"
-    },
-    {
       "family": "Gemini",
       "variant": "gemini-2.0-flash-lite-preview-02-05",
       "sampling": "regenerate",
@@ -556,6 +535,27 @@
         }
       },
       "distinct": 2.61,
+      "utility": 1.76,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-2-2b-it",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 5.66,
+          "utility": 4.63
+        },
+        "1.1": {
+          "distinct": 3.64,
+          "utility": 1.76
+        }
+      },
+      "distinct": 3.64,
       "utility": 1.76,
       "date": "2025-03-27"
     },
