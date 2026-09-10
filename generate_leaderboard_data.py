@@ -228,9 +228,13 @@ def generate_leaderboard_data():
             }
 
         # Store the first (latest) eval date where this model appears
-        model_groups[key]["datasets"].setdefault(model["version"], {})[
-            model["dataset"]
-        ] = {"distinct": model["mean_distinct"], "utility": model["mean_utility"]}
+        # Store the first (latest) eval date where this model appears
+        per_version = model_groups[key]["datasets"].setdefault(model["version"], {})
+        if model["dataset"] not in per_version:
+            per_version[model["dataset"]] = {
+                "distinct": model["mean_distinct"],
+                "utility": model["mean_utility"],
+            }
 
         # Capture metadata if not already set
         if not model_groups[key]["metadata"] and model.get("metadata"):
