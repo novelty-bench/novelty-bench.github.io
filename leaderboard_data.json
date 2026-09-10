@@ -1,9 +1,9 @@
 {
-  "generated_at": "2026-09-10T04:19:55.644148",
+  "generated_at": "2026-09-10T05:31:33.576583",
   "versions": [
     {
       "id": "1.0",
-      "label": "v1.0",
+      "label": "v1.0 (deprecated)",
       "partition": "DeBERTa similarity classifier, first 128 tokens of each response",
       "utility": "Skywork-Reward-Gemma-2-27B reward model",
       "count": 27
@@ -13,7 +13,7 @@
       "label": "v1.1",
       "partition": "gpt-5.6-luna reads all ten responses in full",
       "utility": "claude-opus-5 scores one response per distinct answer",
-      "count": 21
+      "count": 38
     }
   ],
   "categories": [
@@ -21,13 +21,13 @@
       "id": "raw",
       "label": "Raw models",
       "blurb": "One model, sampled ten times.",
-      "count": 24
+      "count": 29
     },
     {
       "id": "inference-time",
       "label": "Inference-time algorithms",
       "blurb": "A scaffold around a base model, making many calls per prompt.",
-      "count": 2
+      "count": 8
     },
     {
       "id": "training-time",
@@ -94,20 +94,211 @@
       }
     },
     {
+      "family": "Anthropic",
+      "variant": "claude-fable-5-1",
+      "sampling": "in-context",
+      "open": false,
+      "category": "inference-time",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 6.68,
+          "utility": 5.32
+        }
+      },
+      "distinct": 6.68,
+      "utility": 5.32,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-opus-5",
+      "sampling": "in-context",
+      "open": false,
+      "category": "inference-time",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 6.32,
+          "utility": 4.94
+        }
+      },
+      "distinct": 6.32,
+      "utility": 4.94,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-6-astra",
+      "sampling": "in-context",
+      "open": false,
+      "category": "inference-time",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 4.84,
+          "utility": 4.45
+        }
+      },
+      "distinct": 4.84,
+      "utility": 4.45,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-sol",
+      "sampling": "in-context",
+      "open": false,
+      "category": "inference-time",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 4.87,
+          "utility": 4.28
+        }
+      },
+      "distinct": 4.87,
+      "utility": 4.28,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-terra",
+      "sampling": "in-context",
+      "open": false,
+      "category": "inference-time",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 4.64,
+          "utility": 4.05
+        }
+      },
+      "distinct": 4.64,
+      "utility": 4.05,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-luna",
+      "sampling": "in-context",
+      "open": false,
+      "category": "inference-time",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 4.26,
+          "utility": 3.7
+        }
+      },
+      "distinct": 4.26,
+      "utility": 3.7,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-fable-5-1",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.33,
+          "utility": 2.85
+        }
+      },
+      "distinct": 2.33,
+      "utility": 2.85,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-6-astra",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.11,
+          "utility": 2.67
+        }
+      },
+      "distinct": 2.11,
+      "utility": 2.67,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-terra",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.22,
+          "utility": 2.62
+        }
+      },
+      "distinct": 2.22,
+      "utility": 2.62,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-sol",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.16,
+          "utility": 2.62
+        }
+      },
+      "distinct": 2.16,
+      "utility": 2.62,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-5.6-luna",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.19,
+          "utility": 2.53
+        }
+      },
+      "distinct": 2.19,
+      "utility": 2.53,
+      "date": "2026-09-10"
+    },
+    {
       "family": "Meta",
       "variant": "CrPO-llama-3.1-8b-instruct",
       "sampling": "regenerate",
       "open": true,
       "category": "training-time",
-      "version": "1.0",
+      "version": "1.1",
       "metrics": {
         "1.0": {
           "distinct": 7.35,
           "utility": 3.38
+        },
+        "1.1": {
+          "distinct": 6.95,
+          "utility": 2.18
         }
       },
-      "distinct": 7.35,
-      "utility": 3.38,
+      "distinct": 6.95,
+      "utility": 2.18,
       "date": "2025-11-21",
       "metadata": {
         "paper": "https://www.mete.is/creative-preference-optimization/",
@@ -115,91 +306,6 @@
         "authors": "Ismayilzada et al.",
         "submitted_by": "mismayil"
       }
-    },
-    {
-      "family": "OpenAI",
-      "variant": "gpt-4o-mini-2024-07-18",
-      "sampling": "regenerate",
-      "open": false,
-      "category": "raw",
-      "version": "1.0",
-      "metrics": {
-        "1.0": {
-          "distinct": 2.65,
-          "utility": 3.11
-        }
-      },
-      "distinct": 2.65,
-      "utility": 3.11,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Cohere",
-      "variant": "command-r-08-2024",
-      "sampling": "regenerate",
-      "open": false,
-      "category": "raw",
-      "version": "1.0",
-      "metrics": {
-        "1.0": {
-          "distinct": 2.68,
-          "utility": 2.98
-        }
-      },
-      "distinct": 2.68,
-      "utility": 2.98,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Anthropic",
-      "variant": "claude-3-opus@20240229",
-      "sampling": "regenerate",
-      "open": false,
-      "category": "raw",
-      "version": "1.0",
-      "metrics": {
-        "1.0": {
-          "distinct": 2.04,
-          "utility": 2.67
-        }
-      },
-      "distinct": 2.04,
-      "utility": 2.67,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Anthropic",
-      "variant": "claude-3-5-haiku@20241022",
-      "sampling": "regenerate",
-      "open": false,
-      "category": "raw",
-      "version": "1.0",
-      "metrics": {
-        "1.0": {
-          "distinct": 1.94,
-          "utility": 2.5
-        }
-      },
-      "distinct": 1.94,
-      "utility": 2.5,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Anthropic",
-      "variant": "claude-3-5-sonnet-v2@20241022",
-      "sampling": "regenerate",
-      "open": false,
-      "category": "raw",
-      "version": "1.0",
-      "metrics": {
-        "1.0": {
-          "distinct": 1.76,
-          "utility": 2.36
-        }
-      },
-      "distinct": 1.76,
-      "utility": 2.36,
-      "date": "2025-03-27"
     },
     {
       "family": "Google",
@@ -286,6 +392,27 @@
       "date": "2025-03-27"
     },
     {
+      "family": "Anthropic",
+      "variant": "claude-3-opus@20240229",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.04,
+          "utility": 2.67
+        },
+        "1.1": {
+          "distinct": 2.3,
+          "utility": 1.84
+        }
+      },
+      "distinct": 2.3,
+      "utility": 1.84,
+      "date": "2025-03-27"
+    },
+    {
       "family": "OpenAI",
       "variant": "gpt-4o-2024-11-20",
       "sampling": "regenerate",
@@ -307,6 +434,27 @@
       "date": "2025-03-27"
     },
     {
+      "family": "Anthropic",
+      "variant": "claude-3-5-sonnet-v2@20241022",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.76,
+          "utility": 2.36
+        },
+        "1.1": {
+          "distinct": 2.03,
+          "utility": 1.82
+        }
+      },
+      "distinct": 2.03,
+      "utility": 1.82,
+      "date": "2025-03-27"
+    },
+    {
       "family": "Meta",
       "variant": "Llama-3.1-8B-Instruct",
       "sampling": "regenerate",
@@ -324,6 +472,27 @@
         }
       },
       "distinct": 3.74,
+      "utility": 1.81,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-4o-mini-2024-07-18",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.65,
+          "utility": 3.11
+        },
+        "1.1": {
+          "distinct": 2.32,
+          "utility": 1.81
+        }
+      },
+      "distinct": 2.32,
       "utility": 1.81,
       "date": "2025-03-27"
     },
@@ -392,6 +561,27 @@
     },
     {
       "family": "Cohere",
+      "variant": "command-r-08-2024",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.68,
+          "utility": 2.98
+        },
+        "1.1": {
+          "distinct": 2.6,
+          "utility": 1.71
+        }
+      },
+      "distinct": 2.6,
+      "utility": 1.71,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Cohere",
       "variant": "command-r-plus-08-2024",
       "sampling": "regenerate",
       "open": false,
@@ -430,6 +620,27 @@
       },
       "distinct": 2.43,
       "utility": 1.69,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-3-5-haiku@20241022",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.94,
+          "utility": 2.5
+        },
+        "1.1": {
+          "distinct": 2.01,
+          "utility": 1.68
+        }
+      },
+      "distinct": 2.01,
+      "utility": 1.68,
       "date": "2025-03-27"
     },
     {
