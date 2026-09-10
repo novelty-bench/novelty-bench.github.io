@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-10T13:44:46.066395",
+  "generated_at": "2026-09-10T13:57:25.972577",
   "versions": [
     {
       "id": "1.0",
@@ -13,7 +13,7 @@
       "label": "v1.1",
       "partition": "gpt-5.6-luna reads all ten responses in full",
       "utility": "claude-opus-5 scores one response per distinct answer",
-      "count": 38
+      "count": 39
     }
   ],
   "categories": [
@@ -21,7 +21,7 @@
       "id": "raw",
       "label": "Raw models",
       "blurb": "One model, sampled ten times.",
-      "count": 29
+      "count": 30
     },
     {
       "id": "inference-time",
@@ -193,6 +193,23 @@
       },
       "distinct": 4.26,
       "utility": 3.7,
+      "date": "2026-09-10"
+    },
+    {
+      "family": "Anthropic",
+      "variant": "claude-opus-5",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.1": {
+          "distinct": 2.43,
+          "utility": 2.9
+        }
+      },
+      "distinct": 2.43,
+      "utility": 2.9,
       "date": "2026-09-10"
     },
     {
