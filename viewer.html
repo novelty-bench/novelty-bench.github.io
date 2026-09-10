@@ -443,8 +443,8 @@ function parseJsonl(text) {
 const HF =
   'https://huggingface.co/datasets/yimingzhang/novelty-bench/resolve/main/results';
 
-// Committed files carry the metric, not the responses. Where a run has no v1.0
-// file beside it to borrow text from, the dataset repo has the full version.
+// Committed files carry the metric; the responses live in the dataset repo,
+// which holds every run at both versions.
 // eval/09-10-2026/curated/openai/gpt-6-astra -> results/2026-09-10_gpt-6-astra/nb-curated
 function corpusUrl(base) {
   const m = base.match(/eval\/(\d\d)-(\d\d)-(\d{4})\/(\w+)\/[^/]+\/([^/]+)$/);
@@ -453,8 +453,8 @@ function corpusUrl(base) {
   return `${HF}/${yyyy}-${mm}-${dd}_${run}/nb-${split}/generations.jsonl`;
 }
 
-// Response text for rows whose committed copy was slimmed. Returns a Map, or
-// null when the corpus is unreachable - the page still works without it.
+// Response text keyed by prompt id. Returns null when the corpus is
+// unreachable - the page still shows the metric without it.
 async function fetchCorpus(base) {
   const url = corpusUrl(base);
   if (!url) return null;
@@ -496,21 +496,8 @@ async function fetchModel(slot) {
     });
   }
 
-  // A slimmed file has no `generations`; try the v1.0 file beside it first,
-  // since it is already served from this origin, then the dataset repo.
-  if (rows.length && !rows[0].generations) {
-    let text = null;
-    if (state.version !== '1.0') {
-      const beside = await fetch(`${base}/partitions.jsonl`);
-      if (beside.ok) {
-        text = new Map(
-          parseJsonl(await beside.text()).map((row) => [row.id, row.generations])
-        );
-      }
-    }
-    if (!text || !text.size) text = await fetchCorpus(base);
-    rows.forEach((row) => (row.generations = text?.get(row.id) ?? []));
-  }
+  const text = await fetchCorpus(base);
+  rows.forEach((row) => (row.generations = text?.get(row.id) ?? []));
   return rows;
 }
 
