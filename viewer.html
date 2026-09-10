@@ -509,7 +509,7 @@ async function fetchModel(slot) {
       }
     }
     if (!text || !text.size) text = await fetchCorpus(base);
-    if (text) rows.forEach((row) => (row.generations = text.get(row.id) ?? []));
+    rows.forEach((row) => (row.generations = text?.get(row.id) ?? []));
   }
   return rows;
 }
@@ -560,6 +560,7 @@ function scoreOf(row, index) {
 }
 
 function renderDetail(row, slot) {
+  const text = row.generations ?? [];
   const distinct = new Set(row.partition).size;
   const refused = row.unscored === 'judge_refusal';
   const utility =
@@ -576,6 +577,11 @@ function renderDetail(row, slot) {
   if (refused) {
     stats.push(
       '<span class="stat">the judge declined to score this prompt</span>'
+    );
+  }
+  if (!text.length) {
+    stats.push(
+      '<span class="stat">response text could not be loaded for this run</span>'
     );
   }
 
@@ -595,9 +601,7 @@ function renderDetail(row, slot) {
             : `Response ${index + 1}<i>repeats response ${members[0] + 1}</i>`;
           return `<div class="generation${first ? '' : ' is-repeat'}">
             <span class="generation-meta">${meta}</span>
-            <div class="generation-body">${escapeHtml(
-              row.generations[index] ?? ''
-            )}</div>
+            <div class="generation-body">${escapeHtml(text[index] ?? '')}</div>
           </div>`;
         })
         .join('');
