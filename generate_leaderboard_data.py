@@ -189,7 +189,7 @@ def generate_leaderboard_data():
             }
 
         # Store the first (latest) eval date where this model appears
-        if model["eval_date"] not in model_groups[key]["datasets"]:
+        if model["dataset"] not in model_groups[key]["datasets"]:
             model_groups[key]["datasets"][model["dataset"]] = {
                 "distinct": model["mean_distinct"],
                 "utility": model["mean_utility"],

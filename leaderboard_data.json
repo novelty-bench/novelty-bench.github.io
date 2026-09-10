@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-08T23:51:43.749106",
+  "generated_at": "2026-09-09T23:49:12.836011",
   "categories": [
     {
       "id": "raw",
@@ -103,7 +103,7 @@
       "variant": "CrPO-llama-3.1-8b-instruct",
       "open": true,
       "category": "training-time",
-      "distinct": 7.35,
+      "distinct": 8.35,
       "utility": 3.38,
       "date": "2025-11-21",
       "metadata": {
