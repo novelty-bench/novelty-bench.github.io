@@ -37,6 +37,27 @@ TRAINING_TIME_VARIANTS = {
     "CrPO-llama-3.1-8b-instruct",
 }
 
+# Metric versions, oldest first. Each model directory holds v1.0 files at its
+# root and later versions under v<version>/. Both versions are shown for every
+# system that has them; the newest ranks the table by default.
+VERSIONS = {
+    "1.0": {
+        "label": "v1.0 (deprecated)",
+        "partition": "DeBERTa similarity classifier, first 128 tokens of each response",
+        "utility": "Skywork-Reward-Gemma-2-27B reward model",
+    },
+    "1.1": {
+        "partition": "gpt-5.6-luna reads all ten responses in full",
+        "utility": "claude-opus-5 scores one response per distinct answer",
+    },
+}
+
+# A run whose directory name ends in this ran the paper's in-context
+# regeneration: each sample is asked for in the same conversation, after the
+# previous ones. That is a scaffold making many calls per prompt, so it is
+# categorised as an inference-time method rather than a raw model.
+IN_CONTEXT_SUFFIX = "_in-context"
+
 CATEGORIES = {
     "raw": {
         "label": "Raw models",
@@ -53,7 +74,14 @@ CATEGORIES = {
 }
 
 
-def categorize(variant, metadata):
+def split_sampling(directory):
+    """Directory name -> (model name, sampling protocol)."""
+    if directory.endswith(IN_CONTEXT_SUFFIX):
+        return directory[: -len(IN_CONTEXT_SUFFIX)], "in-context"
+    return directory, "regenerate"
+
+
+def categorize(variant, metadata, sampling="regenerate"):
     """Assign an entry to a comparison category.
 
     Data-driven so new submissions classify themselves: an inference-time system
@@ -67,6 +95,8 @@ def categorize(variant, metadata):
             return "inference-time"
     if variant in TRAINING_TIME_VARIANTS:
         return "training-time"
+    if sampling == "in-context":
+        return "inference-time"
     return "raw"
 
 
@@ -153,24 +183,31 @@ def generate_leaderboard_data():
                     ]:
                         continue
 
-                    model = model_path.name
-                    summary_file = model_path / "summary.json"
-
-                    if summary_file.exists():
+                    model, sampling = split_sampling(model_path.name)
+                    metadata = load_metadata(model_path)
+                    for version in VERSIONS:
+                        sub = (
+                            model_path if version == "1.0" else model_path / f"v{version}"
+                        )
+                        summary_file = sub / "summary.json"
+                        if not summary_file.exists():
+                            continue
                         summary = load_summary(summary_file)
-                        metadata = load_metadata(model_path)
-                        if summary:
-                            entry = {
-                                "eval_date": eval_date,
-                                "dataset": dataset,
-                                "family": family,
-                                "variant": model,
-                                "mean_distinct": summary.get("mean_distinct"),
-                                "mean_utility": summary.get("mean_utility"),
-                            }
-                            if metadata:
-                                entry["metadata"] = metadata
-                            all_models.append(entry)
+                        if not summary:
+                            continue
+                        entry = {
+                            "eval_date": eval_date,
+                            "dataset": dataset,
+                            "version": version,
+                            "family": family,
+                            "variant": model,
+                            "sampling": sampling,
+                            "mean_distinct": summary.get("mean_distinct"),
+                            "mean_utility": summary.get("mean_utility"),
+                        }
+                        if metadata:
+                            entry["metadata"] = metadata
+                        all_models.append(entry)
 
     print(f"Loaded {len(all_models)} model entries")
 
@@ -178,19 +215,23 @@ def generate_leaderboard_data():
     model_groups = {}
 
     for model in all_models:
-        key = f"{model['family']}::{model['variant']}"
+        # One model run under two sampling protocols is two entries.
+        key = f"{model['family']}::{model['variant']}::{model['sampling']}"
         if key not in model_groups:
             model_groups[key] = {
                 "family": model["family"],
                 "variant": model["variant"],
+                "sampling": model["sampling"],
                 "eval_date": model["eval_date"],
                 "datasets": {},
                 "metadata": model.get("metadata"),
             }
 
         # Store the first (latest) eval date where this model appears
-        if model["dataset"] not in model_groups[key]["datasets"]:
-            model_groups[key]["datasets"][model["dataset"]] = {
+        # Store the first (latest) eval date where this model appears
+        per_version = model_groups[key]["datasets"].setdefault(model["version"], {})
+        if model["dataset"] not in per_version:
+            per_version[model["dataset"]] = {
                 "distinct": model["mean_distinct"],
                 "utility": model["mean_utility"],
             }
@@ -203,35 +244,47 @@ def generate_leaderboard_data():
     leaderboard_data = []
 
     for key, group in model_groups.items():
-        curated = group["datasets"].get("curated")
-        wildchat = group["datasets"].get("wildchat")
+        metrics = {}
+        for version, datasets in group["datasets"].items():
+            curated = datasets.get("curated")
+            wildchat = datasets.get("wildchat")
+            # Only include versions that have both curated and wildchat data
+            if curated and wildchat:
+                # Apply the weighted formula: (curated * 100 + wildchat * 1000) / 1100
+                metrics[version] = {
+                    "distinct": round(
+                        (curated["distinct"] * 100 + wildchat["distinct"] * 1000) / 1100,
+                        2,
+                    ),
+                    "utility": round(
+                        (curated["utility"] * 100 + wildchat["utility"] * 1000) / 1100, 2
+                    ),
+                }
+        if not metrics:
+            continue
+        latest = max(metrics, key=lambda v: tuple(map(int, v.split("."))))
 
-        # Only include models that have both curated and wildchat data
-        if curated and wildchat:
-            # Apply the weighted formula: (curated * 100 + wildchat * 1000) / 1100
-            weighted_distinct = (
-                curated["distinct"] * 100 + wildchat["distinct"] * 1000
-            ) / 1100
-            weighted_utility = (
-                curated["utility"] * 100 + wildchat["utility"] * 1000
-            ) / 1100
+        # Format eval date for display (MM-DD-YYYY -> YYYY-MM-DD)
+        month, day, year = group["eval_date"].split("-")
+        formatted_date = f"{year}-{month}-{day}"
 
-            # Format eval date for display (MM-DD-YYYY -> YYYY-MM-DD)
-            month, day, year = group["eval_date"].split("-")
-            formatted_date = f"{year}-{month}-{day}"
-
-            entry = {
-                "family": format_family_name(group["family"]),
-                "variant": group["variant"],
-                "open": is_open_source(group["family"], group["variant"]),
-                "category": categorize(group["variant"], group.get("metadata")),
-                "distinct": round(weighted_distinct, 2),
-                "utility": round(weighted_utility, 2),
-                "date": formatted_date,
-            }
-            if group.get("metadata"):
-                entry["metadata"] = group["metadata"]
-            leaderboard_data.append(entry)
+        entry = {
+            "family": format_family_name(group["family"]),
+            "variant": group["variant"],
+            "sampling": group["sampling"],
+            "open": is_open_source(group["family"], group["variant"]),
+            "category": categorize(
+                group["variant"], group.get("metadata"), group["sampling"]
+            ),
+            "version": latest,
+            "metrics": metrics,
+            # top-level scores follow the newest version so old readers keep working
+            **metrics[latest],
+            "date": formatted_date,
+        }
+        if group.get("metadata"):
+            entry["metadata"] = group["metadata"]
+        leaderboard_data.append(entry)
 
     # Sort by utility score (descending)
     leaderboard_data.sort(key=lambda x: x["utility"], reverse=True)
@@ -250,6 +303,15 @@ def generate_leaderboard_data():
         json.dump(
             {
                 "generated_at": datetime.now().isoformat(),
+                "versions": [
+                    {
+                        "id": v,
+                        "label": parts.get("label", f"v{v}"),
+                        **parts,
+                        "count": sum(v in m["metrics"] for m in leaderboard_data),
+                    }
+                    for v, parts in VERSIONS.items()
+                ],
                 "categories": [
                     {"id": name, **meta, "count": counts.get(name, 0)}
                     for name, meta in CATEGORIES.items()

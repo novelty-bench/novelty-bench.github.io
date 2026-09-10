@@ -1,0 +1,861 @@
+/* NoveltyBench — measurement report.
+ *
+ * The benchmark asks one question: sample a model ten times, how many answers
+ * actually differ? So the page has one visual idea — a ten-cell track where a
+ * cell is violet if the answer was new and grey if it repeated an earlier one.
+ * It carries the hero and the distinct column, so the notation is learned once.
+ * Everything else is type and hairlines. */
+
+:root {
+  --paper: #f5f6f8;
+  --surface: #ffffff;
+  --ink: #1b1c21;
+  --ink-soft: #5f6270;
+  --ink-faint: #9296a3;
+  --rule: #dfe1e7;
+  --rule-firm: #c8ccd6;
+
+  /* The metric in two values: violet is an answer you had not seen, grey is a
+     repeat. No third accent — the palette is the definition. */
+  --new: #47376c;
+  --new-lift: #6a5794;
+  --repeat: #ccced6;
+
+  /* Rank movement between metric versions. Low saturation, and always paired
+     with a glyph so colour is never the only channel. */
+  --rise: #3d6b4f;
+  --fall: #8a5340;
+
+  --serif: "et-book", Palatino, "Palatino Linotype", Georgia, serif;
+  --data: "Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica,
+    Arial, sans-serif;
+
+  --measure: 66ch;
+  --gutter: clamp(1.25rem, 5vw, 4rem);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 400 1.125rem/1.62 var(--serif);
+  font-feature-settings: "kern" 1;
+}
+
+.wrap {
+  max-width: 76rem;
+  margin: 0 auto;
+  padding-inline: var(--gutter);
+}
+
+a {
+  color: var(--new);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.14em;
+}
+
+a:hover {
+  color: var(--new-lift);
+}
+
+:focus-visible {
+  outline: 2px solid var(--new);
+  outline-offset: 3px;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+
+p {
+  margin: 0 0 0.9em;
+  max-width: var(--measure);
+}
+
+code {
+  font: 0.86em/1.4 var(--data);
+  background: #eceef2;
+  padding: 0.1em 0.32em;
+  border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------- masthead */
+
+.masthead {
+  border-bottom: 1px solid var(--rule-firm);
+  background: var(--surface);
+}
+
+.masthead .wrap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 2rem;
+  padding-block: 1.1rem;
+}
+
+.wordmark {
+  font: 400 1.4rem/1 var(--serif);
+  letter-spacing: -0.02em;
+  margin-right: auto;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.masthead nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.35rem;
+  font: 400 0.95rem/1 var(--data);
+}
+
+.masthead nav a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding-block: 0.2rem;
+  border-bottom: 1px solid transparent;
+}
+
+.masthead nav a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--rule-firm);
+}
+
+/* ------------------------------------------------------------------- hero */
+
+.hero {
+  padding-block: clamp(3rem, 8vw, 5.5rem) clamp(2.5rem, 6vw, 4rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5.2vw, 3.4rem);
+  line-height: 1.12;
+  max-width: 30ch;
+  text-wrap: balance;
+}
+
+.hero h1 em {
+  font-style: italic;
+}
+
+.hero .stand {
+  margin-top: 1.4rem;
+  font-size: 1.16rem;
+  color: var(--ink-soft);
+  max-width: 54ch;
+}
+
+/* Live evidence: three systems, ten cells each. */
+.samples {
+  margin: clamp(2rem, 5vw, 3rem) 0 0;
+  display: grid;
+  gap: 0.65rem;
+  max-width: 40rem;
+}
+
+.sample {
+  display: grid;
+  grid-template-columns: minmax(8.5rem, 12rem) 1fr auto;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.sample-name {
+  font: 400 0.95rem/1.3 var(--data);
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+
+.sample-name small {
+  display: block;
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+}
+
+.sample-count {
+  font: 400 0.95rem/1 var(--data);
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-soft);
+  white-space: nowrap;
+}
+
+.sample-count b {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* the shared notation ------------------------------------------------------ */
+
+.cells {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 2px;
+  height: 1.5rem;
+}
+
+.cells span {
+  background: var(--repeat);
+  border-radius: 1px;
+}
+
+.cells span.is-new {
+  background: var(--new);
+}
+
+.hero .cells span {
+  transform: scaleY(0.34);
+  transform-origin: bottom;
+  animation: settle 0.5s cubic-bezier(0.2, 0.7, 0.3, 1) forwards;
+}
+
+@keyframes settle {
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero .cells span {
+    animation: none;
+    transform: none;
+  }
+}
+
+/* ---------------------------------------------------------------- sections */
+
+section.band {
+  padding-block: clamp(2.5rem, 6vw, 4rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+section.band > .wrap > h2 {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  margin-bottom: 0.5rem;
+}
+
+.lede {
+  color: var(--ink-soft);
+  max-width: var(--measure);
+}
+
+/* ------------------------------------------------------------- the regimes */
+
+.regimes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(22rem, 100%), 1fr));
+  gap: 1px;
+  margin: 1.6rem 0 1.1rem;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+.regime {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  text-align: left;
+  background: var(--surface);
+  padding: 0.95rem 1.1rem;
+  cursor: pointer;
+  font: inherit;
+  display: grid;
+  gap: 0.35rem;
+  border-left: 3px solid transparent;
+}
+
+.regime:hover:not(:disabled) {
+  background: #fbfbfd;
+}
+
+.regime.is-active {
+  border-left-color: var(--new);
+}
+
+.regime:disabled {
+  cursor: default;
+  color: var(--ink-faint);
+}
+
+.regime-id {
+  font: 500 1.02rem/1 var(--data);
+  color: var(--ink-soft);
+}
+
+.regime.is-active .regime-id {
+  color: var(--new);
+}
+
+.regime-spec {
+  display: grid;
+  gap: 0.16rem;
+  font: 400 0.86rem/1.42 var(--data);
+  color: var(--ink-soft);
+}
+
+.regime-metric {
+  color: var(--ink);
+}
+
+.regime-count {
+  font: 400 0.8rem/1 var(--data);
+  color: var(--ink-faint);
+}
+
+.meter-key,
+.note {
+  font: 400 0.88rem/1.5 var(--data);
+  color: var(--ink-faint);
+  max-width: 62ch;
+  margin: 0.6rem 0 0;
+}
+
+/* --------------------------------------------------------------- filtering */
+
+.segmented {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin: 1.5rem 0 0.2rem;
+  font: 400 0.92rem/1 var(--data);
+}
+
+.segment {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--rule-firm);
+  border-radius: 3px;
+  padding: 0.42rem 0.78rem;
+  margin: 0;
+  cursor: pointer;
+  color: var(--ink-soft);
+  font: inherit;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.segment:hover {
+  border-color: var(--ink-faint);
+  color: var(--ink);
+}
+
+.segment.is-active {
+  background: var(--new);
+  border-color: var(--new);
+  color: #fff;
+}
+
+.segment-count {
+  font-variant-numeric: tabular-nums;
+  margin-left: 0.45em;
+  color: var(--ink-faint);
+}
+
+.segment.is-active .segment-count {
+  color: #cfc7e0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segment {
+    transition: none;
+  }
+}
+
+/* ------------------------------------------------------------------- table */
+
+.scrollable {
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+  font: 400 0.98rem/1.45 var(--data);
+}
+
+.table th,
+.table td {
+  padding: 0.72rem 0.85rem;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--rule);
+}
+
+.table thead th {
+  border-bottom: 1px solid var(--rule-firm);
+  font-weight: 500;
+  font-size: 0.86rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover {
+  color: var(--ink-soft);
+}
+
+.sortable.is-sorted {
+  color: var(--new);
+}
+
+.sort-icon {
+  font-size: 0.78em;
+  opacity: 0.7;
+}
+
+.col-rank {
+  width: 3rem;
+  text-align: right;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.table td.col-rank {
+  text-align: right;
+}
+
+.col-open {
+  width: 4rem;
+  text-align: center;
+}
+
+.table td.col-open {
+  text-align: center;
+}
+
+.col-distinct,
+.col-utility {
+  width: 12rem;
+}
+
+.col-shift {
+  width: 6rem;
+}
+
+.table tbody tr:hover td {
+  background: #fbfbfd;
+}
+
+.table tr.is-unscored td {
+  color: var(--ink-faint);
+}
+
+.unscored {
+  font-size: 0.9rem;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+  margin-left: 0.6rem;
+  font-size: 0.95rem;
+}
+
+/* Divided track for a count, continuous for a score. */
+.meter {
+  position: relative;
+  display: inline-block;
+  width: 6.6rem;
+  height: 0.82rem;
+  vertical-align: -0.1rem;
+  background: #edeef2;
+}
+
+.meter i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--new);
+}
+
+.meter-units {
+  background-image: repeating-linear-gradient(
+    to right,
+    transparent 0,
+    transparent calc(10% - 1px),
+    var(--surface) calc(10% - 1px),
+    var(--surface) 10%
+  );
+  background-position: 0 0;
+  background-size: 100% 100%;
+}
+
+.meter-units::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: inherit;
+  pointer-events: none;
+}
+
+.shift-rise {
+  color: var(--rise);
+}
+
+.shift-fall {
+  color: var(--fall);
+}
+
+.shift-flat,
+.shift-none {
+  color: var(--ink-faint);
+}
+
+.col-shift .shift-rise,
+.col-shift .shift-fall {
+  font-variant-numeric: tabular-nums;
+}
+
+.open-yes {
+  color: var(--rise);
+}
+
+.open-no {
+  color: var(--ink-faint);
+}
+
+/* -------------------------------------------------------------- model cell */
+
+.model-name {
+  line-height: 1.3;
+}
+
+.model-base,
+.tag {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--ink-faint);
+}
+
+.tag {
+  display: inline-block;
+  margin-top: 0.2rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.03rem 0.36rem;
+  margin-right: 0.3rem;
+}
+
+.model-citation {
+  color: var(--ink-faint);
+  font-size: 0.88rem;
+}
+
+.model-link {
+  color: var(--ink-faint);
+  margin-left: 0.25rem;
+}
+
+.group-row th {
+  background: #f0f1f5;
+  border-bottom: 1px solid var(--rule-firm);
+  font-weight: 500;
+}
+
+.group-name {
+  color: var(--ink);
+}
+
+.group-blurb,
+.group-count {
+  color: var(--ink-faint);
+  font-weight: 400;
+  margin-left: 0.7rem;
+}
+
+.empty-row {
+  color: var(--ink-faint);
+  padding-block: 2rem;
+}
+
+.is-hidden {
+  display: none !important;
+}
+
+/* ------------------------------------------------------------ judge prompts */
+
+details.prompts {
+  margin-top: 1.6rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+}
+
+details.prompts summary {
+  cursor: pointer;
+  font: 400 1.05rem/1.4 var(--data);
+  color: var(--new);
+}
+
+details.prompts > * {
+  margin-top: 0.9rem;
+}
+
+.prompt-label {
+  font: 500 0.92rem/1.4 var(--data);
+  color: var(--ink);
+  margin-bottom: 0.3rem;
+  max-width: none;
+}
+
+pre.prompt {
+  font: 400 0.88rem/1.55 var(--data);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--new);
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  margin: 0 0 1.2rem;
+}
+
+/* ------------------------------------------------------------------ footer */
+
+footer {
+  padding-block: 2.5rem 4rem;
+  font: 400 0.92rem/1.6 var(--data);
+  color: var(--ink-faint);
+}
+
+footer .wrap > * {
+  max-width: var(--measure);
+}
+
+pre.cite {
+  font: 400 0.82rem/1.5 var(--data);
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 0.9rem 1rem;
+  overflow-x: auto;
+  color: var(--ink-soft);
+}
+
+.authors {
+  color: var(--ink-soft);
+}
+
+@media (max-width: 40rem) {
+  body {
+    font-size: 1.05rem;
+  }
+
+  .sample {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "name count" "cells cells";
+    gap: 0.35rem 0.9rem;
+  }
+
+  .sample-name {
+    grid-area: name;
+  }
+  .sample-count {
+    grid-area: count;
+    text-align: right;
+  }
+  .cells {
+    grid-area: cells;
+    height: 1.15rem;
+  }
+}
+
+.model-date {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  margin-top: 0.15rem;
+}
+
+/* --------------------------------------------------------- title & prose */
+
+.hero .stand {
+  font-size: 1.28rem;
+  color: var(--ink-soft);
+  margin-top: 0.5rem;
+}
+
+.hero .authors {
+  margin-top: 1.4rem;
+  font: 400 0.95rem/1.6 var(--data);
+  color: var(--ink-faint);
+  max-width: 60ch;
+}
+
+.figure {
+  display: block;
+  width: min(100%, 34rem);
+  margin: 1.6rem 0;
+}
+
+section.band details {
+  border-top: 1px solid var(--rule);
+  padding-top: 1rem;
+  margin-top: 1.4rem;
+}
+
+section.band details summary {
+  cursor: pointer;
+  font: 400 1.08rem/1.4 var(--data);
+  color: var(--ink);
+  margin-bottom: 0.6rem;
+}
+
+section.band details summary strong {
+  font-weight: 500;
+}
+
+section.band ul {
+  max-width: var(--measure);
+  padding-left: 1.1rem;
+  margin: 0 0 0.9em;
+}
+
+section.band li {
+  margin-bottom: 0.5em;
+}
+
+footer h2 {
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+
+/* ------------------------------------------------------------ metric names */
+
+/* Two rows, the metric named in the same face and colour it wears as a column
+   header, so the definition and the column read as the same thing. */
+.metrics {
+  display: grid;
+  gap: 0;
+  margin: 1.5rem 0 1.2rem;
+  max-width: 62rem;
+  border-top: 1px solid var(--rule);
+}
+
+.metrics > div {
+  display: grid;
+  grid-template-columns: minmax(9rem, 12rem) 1fr;
+  gap: 0.4rem 1.4rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.metrics dt {
+  font: 500 1.02rem/1.4 var(--data);
+  color: var(--new);
+}
+
+.metrics dd {
+  margin: 0;
+  color: var(--ink);
+  max-width: 58ch;
+}
+
+@media (max-width: 34rem) {
+  .metrics > div {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
+  }
+}
+
+/* -------------------------------------------------- leaderboard front matter */
+
+.notes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(24rem, 100%), 1fr));
+  gap: 0.2rem 2.6rem;
+  margin: 0 0 0.4rem;
+}
+
+.notes p {
+  max-width: none;
+  color: var(--ink-soft);
+}
+
+.metrics {
+  max-width: none;
+}
+
+@media (max-width: 48rem) {
+  .notes {
+    gap: 0;
+  }
+}
+
+/* ----------------------------------------------------------------- article */
+
+/* Headings sit in a rail beside their prose, so a comfortable measure is a
+   deliberate column rather than a line that stops short of the table above. */
+.article .row {
+  display: grid;
+  grid-template-columns: minmax(9rem, 15rem) minmax(0, 66ch);
+  gap: 0.6rem 3rem;
+  padding: 1.9rem 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.article .row:first-child {
+  padding-top: 0;
+}
+
+.article .row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.article h2,
+.article h3 {
+  font-size: 1.3rem;
+  line-height: 1.25;
+  color: var(--ink);
+  text-wrap: balance;
+}
+
+.article .prose > :last-child {
+  margin-bottom: 0;
+}
+
+.article .figure {
+  margin: 1.4rem 0 0;
+  width: 100%;
+}
+
+@media (max-width: 52rem) {
+  .article .row {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+}
+
+/* The analysis page's guide reuses the article rail, with a rule above it to
+   separate it from the charts it explains. */
+.guide {
+  border-top: 1px solid var(--rule-firm);
+  padding-top: 2rem;
+  margin-top: 3rem;
+}
+
+.guide ul {
+  max-width: none;
+  padding-left: 1.1rem;
+  margin: 0;
+}
+
+.guide li {
+  margin-bottom: 0.5em;
+}
