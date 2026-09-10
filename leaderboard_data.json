@@ -1,5 +1,21 @@
 {
-  "generated_at": "2026-09-08T23:51:43.749106",
+  "generated_at": "2026-09-10T04:19:55.644148",
+  "versions": [
+    {
+      "id": "1.0",
+      "label": "v1.0",
+      "partition": "DeBERTa similarity classifier, first 128 tokens of each response",
+      "utility": "Skywork-Reward-Gemma-2-27B reward model",
+      "count": 27
+    },
+    {
+      "id": "1.1",
+      "label": "v1.1",
+      "partition": "gpt-5.6-luna reads all ten responses in full",
+      "utility": "claude-opus-5 scores one response per distinct answer",
+      "count": 21
+    }
+  ],
   "categories": [
     {
       "id": "raw",
@@ -24,10 +40,22 @@
     {
       "family": "Novamine AI",
       "variant": "novamine-ai",
+      "sampling": "regenerate",
       "open": false,
       "category": "inference-time",
-      "distinct": 8.79,
-      "utility": 6.69,
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 8.79,
+          "utility": 6.69
+        },
+        "1.1": {
+          "distinct": 9.3,
+          "utility": 6.65
+        }
+      },
+      "distinct": 9.3,
+      "utility": 6.65,
       "date": "2026-08-19",
       "metadata": {
         "model": "https://novamine.ai",
@@ -40,10 +68,22 @@
     {
       "family": "Novamine AI",
       "variant": "novamine-ai-trill",
+      "sampling": "regenerate",
       "open": false,
       "category": "inference-time",
-      "distinct": 8.37,
-      "utility": 6.28,
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 8.37,
+          "utility": 6.28
+        },
+        "1.1": {
+          "distinct": 8.22,
+          "utility": 6.25
+        }
+      },
+      "distinct": 8.22,
+      "utility": 6.25,
       "date": "2026-08-19",
       "metadata": {
         "model": "https://novamine.ai",
@@ -54,55 +94,18 @@
       }
     },
     {
-      "family": "Google",
-      "variant": "gemma-2-2b-it",
-      "open": true,
-      "category": "raw",
-      "distinct": 5.66,
-      "utility": 4.63,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Google",
-      "variant": "gemma-2-9b-it",
-      "open": true,
-      "category": "raw",
-      "distinct": 3.25,
-      "utility": 3.93,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Google",
-      "variant": "gemma-2-27b-it",
-      "open": true,
-      "category": "raw",
-      "distinct": 3.03,
-      "utility": 3.77,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Meta",
-      "variant": "Llama-3.1-8B-Instruct",
-      "open": true,
-      "category": "raw",
-      "distinct": 5.24,
-      "utility": 3.76,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Meta",
-      "variant": "Llama-3.1-405B-Instruct",
-      "open": true,
-      "category": "raw",
-      "distinct": 3.2,
-      "utility": 3.39,
-      "date": "2025-03-27"
-    },
-    {
       "family": "Meta",
       "variant": "CrPO-llama-3.1-8b-instruct",
+      "sampling": "regenerate",
       "open": true,
       "category": "training-time",
+      "version": "1.0",
+      "metrics": {
+        "1.0": {
+          "distinct": 7.35,
+          "utility": 3.38
+        }
+      },
       "distinct": 7.35,
       "utility": 3.38,
       "date": "2025-11-21",
@@ -114,127 +117,69 @@
       }
     },
     {
-      "family": "Cohere",
-      "variant": "command-r7b-12-2024",
-      "open": false,
-      "category": "raw",
-      "distinct": 3.58,
-      "utility": 3.35,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "OpenAI",
-      "variant": "gpt-4o-2024-11-20",
-      "open": false,
-      "category": "raw",
-      "distinct": 2.88,
-      "utility": 3.27,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Meta",
-      "variant": "Llama-3.2-3B-Instruct",
-      "open": true,
-      "category": "raw",
-      "distinct": 5.1,
-      "utility": 3.24,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Gemini",
-      "variant": "gemini-2.0-flash-lite-preview-02-05",
-      "open": false,
-      "category": "raw",
-      "distinct": 2.83,
-      "utility": 3.2,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Gemini",
-      "variant": "gemini-2.0-flash",
-      "open": false,
-      "category": "raw",
-      "distinct": 2.81,
-      "utility": 3.17,
-      "date": "2025-03-27"
-    },
-    {
       "family": "OpenAI",
       "variant": "gpt-4o-mini-2024-07-18",
+      "sampling": "regenerate",
       "open": false,
       "category": "raw",
+      "version": "1.0",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.65,
+          "utility": 3.11
+        }
+      },
       "distinct": 2.65,
       "utility": 3.11,
       "date": "2025-03-27"
     },
     {
       "family": "Cohere",
-      "variant": "command-r-plus-08-2024",
-      "open": false,
-      "category": "raw",
-      "distinct": 2.79,
-      "utility": 3.08,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Cohere",
       "variant": "command-r-08-2024",
+      "sampling": "regenerate",
       "open": false,
       "category": "raw",
+      "version": "1.0",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.68,
+          "utility": 2.98
+        }
+      },
       "distinct": 2.68,
       "utility": 2.98,
       "date": "2025-03-27"
     },
     {
-      "family": "Meta",
-      "variant": "Llama-3.3-70B-Instruct",
-      "open": true,
-      "category": "raw",
-      "distinct": 2.49,
-      "utility": 2.87,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Meta",
-      "variant": "Llama-3.2-1B-Instruct",
-      "open": true,
-      "category": "raw",
-      "distinct": 6.74,
-      "utility": 2.81,
-      "date": "2025-03-27"
-    },
-    {
-      "family": "Gemini",
-      "variant": "gemini-1.5-pro",
-      "open": false,
-      "category": "raw",
-      "distinct": 1.85,
-      "utility": 2.73,
-      "date": "2025-03-27"
-    },
-    {
       "family": "Anthropic",
       "variant": "claude-3-opus@20240229",
+      "sampling": "regenerate",
       "open": false,
       "category": "raw",
+      "version": "1.0",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.04,
+          "utility": 2.67
+        }
+      },
       "distinct": 2.04,
       "utility": 2.67,
       "date": "2025-03-27"
     },
     {
-      "family": "Gemini",
-      "variant": "gemini-2.0-pro-exp-02-05",
-      "open": false,
-      "category": "raw",
-      "distinct": 2.25,
-      "utility": 2.64,
-      "date": "2025-03-27"
-    },
-    {
       "family": "Anthropic",
       "variant": "claude-3-5-haiku@20241022",
+      "sampling": "regenerate",
       "open": false,
       "category": "raw",
+      "version": "1.0",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.94,
+          "utility": 2.5
+        }
+      },
       "distinct": 1.94,
       "utility": 2.5,
       "date": "2025-03-27"
@@ -242,46 +187,417 @@
     {
       "family": "Anthropic",
       "variant": "claude-3-5-sonnet-v2@20241022",
+      "sampling": "regenerate",
       "open": false,
       "category": "raw",
+      "version": "1.0",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.76,
+          "utility": 2.36
+        }
+      },
       "distinct": 1.76,
       "utility": 2.36,
       "date": "2025-03-27"
     },
     {
       "family": "Google",
-      "variant": "gemma-3-4b-it",
+      "variant": "gemma-2-27b-it",
+      "sampling": "regenerate",
       "open": true,
       "category": "raw",
-      "distinct": 1.81,
-      "utility": 2.2,
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 3.03,
+          "utility": 3.77
+        },
+        "1.1": {
+          "distinct": 2.78,
+          "utility": 2.0
+        }
+      },
+      "distinct": 2.78,
+      "utility": 2.0,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-2-9b-it",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 3.25,
+          "utility": 3.93
+        },
+        "1.1": {
+          "distinct": 2.91,
+          "utility": 1.99
+        }
+      },
+      "distinct": 2.91,
+      "utility": 1.99,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-1.5-pro",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.85,
+          "utility": 2.73
+        },
+        "1.1": {
+          "distinct": 2.31,
+          "utility": 1.94
+        }
+      },
+      "distinct": 2.31,
+      "utility": 1.94,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.1-405B-Instruct",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 3.2,
+          "utility": 3.39
+        },
+        "1.1": {
+          "distinct": 2.63,
+          "utility": 1.87
+        }
+      },
+      "distinct": 2.63,
+      "utility": 1.87,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "OpenAI",
+      "variant": "gpt-4o-2024-11-20",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.88,
+          "utility": 3.27
+        },
+        "1.1": {
+          "distinct": 2.22,
+          "utility": 1.82
+        }
+      },
+      "distinct": 2.22,
+      "utility": 1.82,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.1-8B-Instruct",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 5.24,
+          "utility": 3.76
+        },
+        "1.1": {
+          "distinct": 3.74,
+          "utility": 1.81
+        }
+      },
+      "distinct": 3.74,
+      "utility": 1.81,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-2.0-flash",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.81,
+          "utility": 3.17
+        },
+        "1.1": {
+          "distinct": 2.61,
+          "utility": 1.78
+        }
+      },
+      "distinct": 2.61,
+      "utility": 1.78,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-2-2b-it",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 5.66,
+          "utility": 4.63
+        },
+        "1.1": {
+          "distinct": 3.64,
+          "utility": 1.76
+        }
+      },
+      "distinct": 3.64,
+      "utility": 1.76,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-2.0-flash-lite-preview-02-05",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.83,
+          "utility": 3.2
+        },
+        "1.1": {
+          "distinct": 2.61,
+          "utility": 1.76
+        }
+      },
+      "distinct": 2.61,
+      "utility": 1.76,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Cohere",
+      "variant": "command-r-plus-08-2024",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.79,
+          "utility": 3.08
+        },
+        "1.1": {
+          "distinct": 2.58,
+          "utility": 1.71
+        }
+      },
+      "distinct": 2.58,
+      "utility": 1.71,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.3-70B-Instruct",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.49,
+          "utility": 2.87
+        },
+        "1.1": {
+          "distinct": 2.43,
+          "utility": 1.69
+        }
+      },
+      "distinct": 2.43,
+      "utility": 1.69,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.2-3B-Instruct",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 5.1,
+          "utility": 3.24
+        },
+        "1.1": {
+          "distinct": 3.99,
+          "utility": 1.65
+        }
+      },
+      "distinct": 3.99,
+      "utility": 1.65,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Cohere",
+      "variant": "command-r7b-12-2024",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 3.58,
+          "utility": 3.35
+        },
+        "1.1": {
+          "distinct": 3.12,
+          "utility": 1.63
+        }
+      },
+      "distinct": 3.12,
+      "utility": 1.63,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Gemini",
+      "variant": "gemini-2.0-pro-exp-02-05",
+      "sampling": "regenerate",
+      "open": false,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.25,
+          "utility": 2.64
+        },
+        "1.1": {
+          "distinct": 2.36,
+          "utility": 1.62
+        }
+      },
+      "distinct": 2.36,
+      "utility": 1.62,
+      "date": "2025-03-27"
+    },
+    {
+      "family": "Google",
+      "variant": "gemma-3-4b-it",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.81,
+          "utility": 2.2
+        },
+        "1.1": {
+          "distinct": 2.95,
+          "utility": 1.55
+        }
+      },
+      "distinct": 2.95,
+      "utility": 1.55,
       "date": "2025-09-09"
     },
     {
       "family": "Google",
       "variant": "gemma-3-27b-it",
+      "sampling": "regenerate",
       "open": true,
       "category": "raw",
-      "distinct": 1.67,
-      "utility": 2.12,
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.67,
+          "utility": 2.12
+        },
+        "1.1": {
+          "distinct": 2.42,
+          "utility": 1.5
+        }
+      },
+      "distinct": 2.42,
+      "utility": 1.5,
       "date": "2025-09-09"
+    },
+    {
+      "family": "Meta",
+      "variant": "Llama-3.2-1B-Instruct",
+      "sampling": "regenerate",
+      "open": true,
+      "category": "raw",
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 6.74,
+          "utility": 2.81
+        },
+        "1.1": {
+          "distinct": 5.12,
+          "utility": 1.48
+        }
+      },
+      "distinct": 5.12,
+      "utility": 1.48,
+      "date": "2025-03-27"
     },
     {
       "family": "Google",
       "variant": "gemma-3-12b-it",
+      "sampling": "regenerate",
       "open": true,
       "category": "raw",
-      "distinct": 1.79,
-      "utility": 2.05,
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 1.79,
+          "utility": 2.05
+        },
+        "1.1": {
+          "distinct": 2.64,
+          "utility": 1.46
+        }
+      },
+      "distinct": 2.64,
+      "utility": 1.46,
       "date": "2025-09-09"
     },
     {
       "family": "Google",
       "variant": "gemma-3-1b-it",
+      "sampling": "regenerate",
       "open": true,
       "category": "raw",
-      "distinct": 2.27,
-      "utility": 1.84,
+      "version": "1.1",
+      "metrics": {
+        "1.0": {
+          "distinct": 2.27,
+          "utility": 1.84
+        },
+        "1.1": {
+          "distinct": 3.57,
+          "utility": 1.23
+        }
+      },
+      "distinct": 3.57,
+      "utility": 1.23,
       "date": "2025-09-09"
     }
   ]
