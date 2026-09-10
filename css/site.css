@@ -431,6 +431,32 @@ section.band > .wrap > h2 {
   text-align: right;
 }
 
+.col-source {
+  width: 7rem;
+}
+
+/* Provenance is a label, not a measurement: one hairline treatment for all
+   three, so no source reads as ranking above another. */
+.source {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+  padding: 0.03rem 0.36rem;
+  white-space: nowrap;
+}
+
+.source-paper {
+  color: var(--ink);
+  border-color: var(--rule-firm);
+}
+
+.source-unknown {
+  color: var(--ink-faint);
+  border-color: transparent;
+}
+
 .col-open {
   width: 4rem;
   text-align: center;

@@ -58,6 +58,42 @@ VERSIONS = {
 # categorised as an inference-time method rather than a raw model.
 IN_CONTEXT_SUFFIX = "_in-context"
 
+# The eval date carrying the paper's original release. Everything else we ran
+# ourselves came later, so the date is what separates published numbers from
+# the ones added afterwards.
+PAPER_EVAL_DATE = "03-27-2025"
+
+# Where a row's numbers came from. Outside submissions name their submitter in
+# metadata.json, so they label themselves; a submission may also set `source`
+# explicitly to override.
+SOURCES = {
+    "paper": {
+        "label": "Paper",
+        "blurb": "Published in the NoveltyBench paper.",
+    },
+    "authors": {
+        "label": "Authors",
+        "blurb": "Run by the benchmark authors after publication.",
+    },
+    "community": {
+        "label": "Community",
+        "blurb": "Submitted by an outside contributor.",
+    },
+}
+
+
+def source_of(eval_date, metadata):
+    """Attribute an entry to whoever produced its numbers."""
+    if metadata:
+        if metadata.get("source") in SOURCES:
+            return metadata["source"]
+        if metadata.get("submitted_by"):
+            return "community"
+    if eval_date == PAPER_EVAL_DATE:
+        return "paper"
+    return "authors"
+
+
 CATEGORIES = {
     "raw": {
         "label": "Raw models",
@@ -202,6 +238,7 @@ def generate_leaderboard_data():
                             "family": family,
                             "variant": model,
                             "sampling": sampling,
+                            "source": source_of(eval_date, metadata),
                             "mean_distinct": summary.get("mean_distinct"),
                             "mean_utility": summary.get("mean_utility"),
                         }
@@ -222,6 +259,7 @@ def generate_leaderboard_data():
                 "family": model["family"],
                 "variant": model["variant"],
                 "sampling": model["sampling"],
+                "source": model["source"],
                 "eval_date": model["eval_date"],
                 "datasets": {},
                 "metadata": model.get("metadata"),
@@ -272,6 +310,7 @@ def generate_leaderboard_data():
             "family": format_family_name(group["family"]),
             "variant": group["variant"],
             "sampling": group["sampling"],
+            "source": group["source"],
             "open": is_open_source(group["family"], group["variant"]),
             "category": categorize(
                 group["variant"], group.get("metadata"), group["sampling"]
@@ -290,11 +329,15 @@ def generate_leaderboard_data():
     leaderboard_data.sort(key=lambda x: x["utility"], reverse=True)
 
     counts = {}
+    source_counts = {}
     for entry in leaderboard_data:
         counts[entry["category"]] = counts.get(entry["category"], 0) + 1
+        source_counts[entry["source"]] = source_counts.get(entry["source"], 0) + 1
     print(f"Generated leaderboard with {len(leaderboard_data)} models")
     for name, meta in CATEGORIES.items():
         print(f"  {meta['label']}: {counts.get(name, 0)}")
+    for name, meta in SOURCES.items():
+        print(f"  {meta['label']}: {source_counts.get(name, 0)}")
 
     # Write the aggregated data. Category order is fixed here so the page does
     # not have to know about it.
@@ -315,6 +358,12 @@ def generate_leaderboard_data():
                 "categories": [
                     {"id": name, **meta, "count": counts.get(name, 0)}
                     for name, meta in CATEGORIES.items()
+                ],
+                # Fixed order, so the page can sort by provenance without
+                # knowing what the labels mean.
+                "sources": [
+                    {"id": name, **meta, "count": source_counts.get(name, 0)}
+                    for name, meta in SOURCES.items()
                 ],
                 "models": leaderboard_data,
             },

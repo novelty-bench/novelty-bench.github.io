@@ -15,6 +15,7 @@ class LeaderboardManager {
     this.models = [];
     this.categories = [];
     this.versions = [];
+    this.sources = [];
     this.ranking = null; // metric version that orders the table
     this.filter = 'all';
     this.sort = { column: 'utility', direction: 'desc' };
@@ -37,11 +38,13 @@ class LeaderboardManager {
       this.models = data.models || [];
       this.categories = data.categories || [];
       this.versions = data.versions || [];
+      this.sources = data.sources || [];
     } catch (error) {
       console.error('Could not load leaderboard data:', error);
       this.models = [];
       this.categories = [];
       this.versions = [];
+      this.sources = [];
     }
     // A regime with no scored systems yet is announced but cannot order the
     // table, so the newest *populated* regime ranks by default.
@@ -265,6 +268,12 @@ class LeaderboardManager {
         av = av ? 1 : 0;
         bv = bv ? 1 : 0;
       }
+      // Provenance reads in the generator's order — published first, outside
+      // submissions last — not alphabetically.
+      if (column === 'source') {
+        av = this.sourceRank(a);
+        bv = this.sourceRank(b);
+      }
       if (typeof av === 'string') return sign * av.localeCompare(bv);
       return sign * (av - bv);
     });
@@ -351,6 +360,28 @@ class LeaderboardManager {
       .join('');
   }
 
+  // Provenance of a row's numbers. The generator fixes both the labels and
+  // their order, so an unrecognised id still prints rather than disappearing.
+  sourceOf(model) {
+    return (
+      this.sources.find((s) => s.id === model.source) ||
+      (model.source ? { id: model.source, label: model.source, blurb: '' } : null)
+    );
+  }
+
+  sourceRank(model) {
+    const index = this.sources.findIndex((s) => s.id === model.source);
+    return index === -1 ? this.sources.length : index;
+  }
+
+  sourceCell(model) {
+    const source = this.sourceOf(model);
+    if (!source) return '<span class="source source-unknown">—</span>';
+    return `<span class="source source-${source.id}"${
+      source.blurb ? ` title="${source.blurb}"` : ''
+    }>${source.label}</span>`;
+  }
+
   row(model, rank) {
     const openMark = model.open
       ? '<i class="fas fa-check open-yes" title="Open weights"></i>'
@@ -368,6 +399,7 @@ class LeaderboardManager {
       <tr class="is-unscored">
         <td class="col-rank">—</td>
         <td class="col-variant">${this.variantCell(model)}</td>
+        <td class="col-source">${this.sourceCell(model)}</td>
         <td class="col-open"><span class="open-status ${model.open}">${openMark}</span></td>
         <td class="col-distinct" colspan="2">${note}</td>
       </tr>`;
@@ -377,6 +409,7 @@ class LeaderboardManager {
       <tr>
         <td class="col-rank">${rank}</td>
         <td class="col-variant">${this.variantCell(model)}</td>
+        <td class="col-source">${this.sourceCell(model)}</td>
         <td class="col-open"><span class="open-status ${model.open}">${openMark}</span></td>
         <td class="col-distinct">${this.meter(
           model.distinct,
@@ -395,7 +428,7 @@ class LeaderboardManager {
     const systems = count === 1 ? '1 system' : `${count} systems`;
     return `
       <tr class="group-row">
-        <th colspan="5" scope="colgroup">
+        <th colspan="6" scope="colgroup">
           <span class="group-name">${category.label}</span>
           <span class="group-blurb">${category.blurb}</span>
           <span class="group-count">${systems}</span>
@@ -426,7 +459,7 @@ class LeaderboardManager {
 
     tbody.innerHTML =
       html ||
-      '<tr><td colspan="5" class="empty-row">No systems in this category yet.</td></tr>';
+      '<tr><td colspan="6" class="empty-row">No systems in this category yet.</td></tr>';
   }
 }
 
